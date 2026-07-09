@@ -1460,24 +1460,53 @@ function parsePastedRows(text){
   return parsed;
 }
 
-// Uma linha é considerada cabeçalho de família/seção quando, tirando números
-// e pontuação, o texto restante é inteiramente MAIÚSCULO (ex.: "NEGÓCIOS
-// CRÉDITO", "GESTÃO DE RISCO", "QUALIDADE") — diferente dos nomes de
-// indicador, que sempre vêm em texto normal (ex.: "Captação Líquida PJ").
-function looksLikeSectionHeader(line){
-  const stripped = line.replace(/[\d.,%]/g, '').trim();
-  if(stripped.length < 3 || stripped.length > 45) return false;
-  const lettersOnly = stripped.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+// Nomes-padrão de famílias/seções do POBJ Bradesco (Agência e Gerentes),
+// usados para VALIDAR se uma linha em maiúsculo é mesmo um cabeçalho de
+// família — evita criar famílias falsas a partir de fragmentos de
+// cabeçalho de coluna ("% PROJ.", "NEC DIA PTS") ou legendas de rodapé.
+const STANDARD_SECTION_HINTS = [
+  'CLIENTES', 'NEGÓCIOS CAPTAÇÃO', 'CAPTAÇÃO', 'NEGÓCIOS CRÉDITO', 'CRÉDITO',
+  'GESTÃO DE RISCO', 'PRODUTIVIDADE DA EQUIPE', 'PRODUTIVIDADE', 'QUALIDADE',
+  'LIGADAS E ACELERADORES', 'NEGÓCIOS LIGADAS', 'ACELERADORES', 'LIGADAS',
+];
+
+// Palavras que só aparecem em fragmentos de cabeçalho de coluna/legenda —
+// se uma linha maiúscula for composta SÓ por essas palavras, não é família.
+const HEADER_FRAGMENT_WORDS = new Set([
+  'produto','peso','metrica','dt','base','meta','realizado','atg','ref',
+  'proj','final','nec','dia','pts','acao','indicadores','pontos','pontuacao',
+  'totais','total','legendas','igual','superior','entre','inferior','nao',
+  'calculado','portal','varejo','bradesco','sistema','informacoes','tecnologia',
+]);
+
+// Uma linha só é aceita como cabeçalho de família quando: (1) é inteiramente
+// maiúscula, (2) não é composta só por fragmentos de cabeçalho/legenda, e
+// (3) bate por semelhança com uma família já existente no mapa OU com um dos
+// nomes-padrão conhecidos. Isso evita que ruído do PDF (cabeçalhos quebrados,
+// legendas de rodapé) seja confundido com uma família de verdade.
+function looksLikeSectionHeader(line, knownSectionNames){
+  const stripped = line.replace(/[\d.,%]/g, ' ').replace(/\s+/g, ' ').trim();
+  if(stripped.length < 3 || stripped.length > 40) return false;
+
+  const lettersOnly = stripped.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '').trim();
   if(lettersOnly.length < 3) return false;
-  return lettersOnly === lettersOnly.toUpperCase();
+  if(lettersOnly !== lettersOnly.toUpperCase()) return false;
+
+  const wordsNorm = normalizeName(lettersOnly).split(' ').filter(Boolean);
+  if(wordsNorm.length === 0) return false;
+  if(wordsNorm.every(w => HEADER_FRAGMENT_WORDS.has(w))) return false;
+
+  const candidateNorm = normalizeName(stripped);
+  const allKnown = [...knownSectionNames, ...STANDARD_SECTION_HINTS];
+  return allKnown.some(name => nameSimilarity(candidateNorm, normalizeName(name)) >= 0.5);
 }
 
 // Percorre as linhas do PDF em ordem e marca a qual família/seção cada linha
-// pertence, com base no último cabeçalho de seção visto acima dela.
-function tagLinesWithSection(lines){
+// pertence, com base no último cabeçalho de seção RECONHECIDO visto acima dela.
+function tagLinesWithSection(lines, knownSectionNames){
   let currentSection = null;
   return lines.map(line => {
-    if(looksLikeSectionHeader(line)){
+    if(looksLikeSectionHeader(line, knownSectionNames)){
       currentSection = line.trim();
       return { text: line, section: currentSection, isHeader: true };
     }
@@ -1526,14 +1555,17 @@ async function extractLinesFromPdf(arrayBuffer){
 
 // Compara a estrutura extraída do PDF (famílias + indicadores + pesos) com o
 // mapa atual e corrige o que for necessário:
-//  - indicador já existe             -> atualiza Meta/Realizado (e Peso, se mudou)
-//  - indicador mudou de família      -> move para a família correta no PDF
-//  - indicador novo no PDF           -> adiciona na família correspondente
-//    (cria a família se ela também for nova)
+//  - indicador já existe                    -> atualiza Meta/Realizado (e Peso, se mudou)
+//  - indicador novo no PDF                  -> adiciona na família correspondente
+//    (só cria família nova se o cabeçalho bater com um nome padrão conhecido)
 //  - indicador do mapa não está mais no PDF -> fica marcado como candidato a
 //    remoção (só é removido de fato depois de confirmação do usuário)
+// Importante: indicadores já existentes NUNCA são movidos de família
+// automaticamente — isso evita reestruturar o mapa inteiro por causa de um
+// falso positivo na detecção de cabeçalho (o que já causou um bug grave).
 function syncStructureFromPdf(lines, sectionsArr){
-  const tagged = tagLinesWithSection(lines);
+  const knownSectionNames = sectionsArr.map(s => s.name);
+  const tagged = tagLinesWithSection(lines, knownSectionNames);
 
   const parsedWithSection = [];
   tagged.forEach(({ text, section, isHeader }) => {
@@ -1545,9 +1577,8 @@ function syncStructureFromPdf(lines, sectionsArr){
   const allRows = [];
   sectionsArr.forEach((sec, sIdx) => sec.rows.forEach((r, i) => allRows.push({ r, sIdx, i, matched:false })));
 
-  let updated = 0, pesoChanged = 0, moved = 0, added = 0;
+  let updated = 0, pesoChanged = 0, added = 0;
   const newSectionsCreated = new Set();
-  const movePlan = [];
   const addPlan = [];
 
   function findOrCreateSection(sectionName){
@@ -1571,6 +1602,7 @@ function syncStructureFromPdf(lines, sectionsArr){
     });
 
     if(best && bestScore >= 0.55){
+      // indicador já existe — só atualiza os valores, NUNCA muda de família
       best.matched = true;
       if(p.meta) best.r.meta = formatNumberDisplay(p.meta);
       if(p.realizado) best.r.realizado = formatNumberDisplay(p.realizado);
@@ -1580,39 +1612,13 @@ function syncStructureFromPdf(lines, sectionsArr){
       }
       if(p.meta || p.realizado) recomputeAtg(best.r);
       updated++;
-
-      if(p.section){
-        const currentSec = sectionsArr[best.sIdx];
-        const sameFamily = nameSimilarity(normalizeName(currentSec.name), normalizeName(p.section)) >= 0.5;
-        if(!sameFamily){
-          movePlan.push({ item: best, sectionName: p.section });
-        }
-      }
     } else {
       addPlan.push(p);
     }
   });
 
-  // aplica as mudanças de família primeiro (remove da seção antiga em ordem segura)
-  const removalsBySection = {};
-  movePlan.forEach(({ item }) => {
-    (removalsBySection[item.sIdx] = removalsBySection[item.sIdx] || []).push(item.i);
-  });
-  Object.keys(removalsBySection).forEach(sIdxStr => {
-    const sIdx = parseInt(sIdxStr, 10);
-    removalsBySection[sIdx].sort((a,b) => b - a).forEach(i => {
-      sectionsArr[sIdx].rows.splice(i, 1);
-    });
-  });
-  movePlan.forEach(({ item, sectionName }) => {
-    const target = findOrCreateSection(sectionName);
-    if(target){
-      target.rows.push(item.r);
-      moved++;
-    }
-  });
-
-  // adiciona indicadores novos
+  // adiciona indicadores novos na família detectada (ou cria a família, se
+  // o cabeçalho já foi validado contra os nomes-padrão conhecidos)
   addPlan.forEach(p => {
     const target = findOrCreateSection(p.section) || sectionsArr[sectionsArr.length - 1];
     if(!target) return;
@@ -1626,7 +1632,7 @@ function syncStructureFromPdf(lines, sectionsArr){
   const toRemove = allRows.filter(item => !item.matched);
 
   return {
-    updated, pesoChanged, moved, added,
+    updated, pesoChanged, added,
     newSectionsCreated: Array.from(newSectionsCreated),
     toRemove,
   };
@@ -1661,7 +1667,6 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e) => 
     const parts = [];
     parts.push(`${result.updated} indicador(es) atualizado(s)`);
     if(result.pesoChanged) parts.push(`${result.pesoChanged} com peso alterado`);
-    if(result.moved) parts.push(`${result.moved} movido(s) de família`);
     if(result.added) parts.push(`${result.added} indicador(es) novo(s) adicionado(s)`);
     if(result.newSectionsCreated.length) parts.push(`nova(s) família(s): ${result.newSectionsCreated.join(', ')}`);
 
