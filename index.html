@@ -7,6 +7,8 @@
 <!-- Firebase (compat) — usado para salvar o estado atual e o histórico de atualizações -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- PDF.js — usado para ler o PDF exportado do portal e extrair os indicadores -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
     --maroon-1:#5a0f2a;
@@ -377,6 +379,11 @@
     color:#888;
     font-style:italic;
   }
+  .pdf-import-row{
+    margin-top:6px;
+    padding-top:14px;
+    border-top:1px dashed #ddd;
+  }
 
   /* ===== Comparativo de indicadores (Agência x Gerentes) — layout em linhas ===== */
   .indicator-multiselect{position:relative;}
@@ -630,6 +637,14 @@
       <button id="toggleHistoryBtn" class="pill dark" style="cursor:pointer;">&#128220; Histórico</button>
       <span id="pasteStatus"></span>
     </div>
+
+    <div class="pdf-import-row">
+      <div class="paste-head" style="margin-top:16px;">&#128196; Ou importe o relatório exportado em PDF</div>
+      <label for="pdfFileInput" class="pill dark" style="cursor:pointer;display:inline-block;">&#128194; Escolher arquivo PDF</label>
+      <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
+      <span id="pdfStatus" style="margin-left:10px;font-size:12.5px;color:#555;"></span>
+    </div>
+
     <div id="fbStatus" class="fb-status">Conectando ao Firebase...</div>
   </div>
 
@@ -1397,6 +1412,91 @@ function parsePastedRows(text){
 
   return parsed;
 }
+
+// =====================================================================
+// Importar dados de um PDF exportado do portal de origem
+// =====================================================================
+// Reconstrói o texto do PDF linha a linha, agrupando os fragmentos de texto
+// pela posição vertical (mesma "linha" visual da tabela) e ordenando da
+// esquerda para a direita — depois reaproveita o MESMO parsePastedRows()
+// usado na colagem de texto, já que ele já é tolerante a formatação bagunçada.
+async function extractLinesFromPdf(arrayBuffer){
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const lines = [];
+
+  for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+
+    const rows = [];
+    content.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      const x = item.transform[4];
+      let row = rows.find(r => Math.abs(r.y - y) <= 3);
+      if(!row){
+        row = { y, items: [] };
+        rows.push(row);
+      }
+      row.items.push({ x, text: item.str });
+    });
+
+    // de cima para baixo (coordenada Y do PDF cresce de baixo pra cima)
+    rows.sort((a,b) => b.y - a.y);
+    rows.forEach(row => {
+      row.items.sort((a,b) => a.x - b.x);
+      const lineText = row.items.map(i => i.text).join(' ').replace(/\s+/g, ' ').trim();
+      if(lineText) lines.push(lineText);
+    });
+  }
+
+  return lines;
+}
+
+document.getElementById('pdfFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  const statusEl = document.getElementById('pdfStatus');
+  if(!file) return;
+
+  statusEl.textContent = 'Lendo o PDF...';
+  statusEl.style.color = '#555';
+
+  try {
+    if(typeof pdfjsLib === 'undefined'){
+      throw new Error('Biblioteca de leitura de PDF não carregou (verifique sua conexão com a internet).');
+    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const arrayBuffer = await file.arrayBuffer();
+    const lines = await extractLinesFromPdf(arrayBuffer);
+    const text = lines.join('\n');
+
+    const parsed = parsePastedRows(text);
+    if(parsed.length === 0){
+      statusEl.textContent = 'Não consegui reconhecer indicadores neste PDF.';
+      statusEl.style.color = '#a3123a';
+      return;
+    }
+
+    const { updated, notFound } = applyParsedDataToSections(parsed, getActiveSectionsArr());
+    renderCurrentView();
+    saveActiveSnapshot(`Importação de PDF — ${updated} indicador(es)`);
+    refreshIndicatorChecklist();
+    refreshIndicatorCompareIfOpen();
+
+    let msg = `${updated} indicador(es) atualizado(s) a partir do PDF.`;
+    if(notFound.length){
+      msg += ` Não localizado(s): ${notFound.join(', ')}`;
+    }
+    statusEl.textContent = msg;
+    statusEl.style.color = notFound.length ? '#b5730a' : '#2e7d32';
+  } catch(err){
+    console.error('Erro ao ler PDF:', err);
+    statusEl.textContent = 'Erro ao ler o PDF: ' + err.message;
+    statusEl.style.color = '#a3123a';
+  }
+
+  e.target.value = ''; // permite selecionar o mesmo arquivo de novo depois
+});
 
 function applyParsedDataToSections(parsedRows, sectionsArr){
   const allRows = [];
