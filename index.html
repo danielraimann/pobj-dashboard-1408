@@ -163,7 +163,7 @@
     font-size:13px;
   }
   .card-head.indic{grid-template-columns:1.4fr 1fr 1fr 1fr;}
-  .card-head.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr;}
+  .card-head.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr;}
   .card-head div, .card-body div{padding:9px 8px;text-align:center;}
   .card-head div:first-child, .card-body div:first-child{text-align:left;padding-left:14px;}
   .card-body{
@@ -173,7 +173,7 @@
     color:#222;
   }
   .card-body.indic{grid-template-columns:1.4fr 1fr 1fr 1fr;}
-  .card-body.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr;}
+  .card-body.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr;}
   .bar-track{
     height:7px;
     background:#eee;
@@ -352,16 +352,6 @@
     margin-bottom:8px;
     font-size:14px;
   }
-  #pasteArea{
-    width:100%;
-    min-height:90px;
-    border:1px solid #c9c9c9;
-    border-radius:4px;
-    padding:8px 10px;
-    font-family:'Courier New',monospace;
-    font-size:12px;
-    resize:vertical;
-  }
   .paste-actions{
     display:flex;
     align-items:center;
@@ -369,7 +359,7 @@
     margin-top:10px;
     flex-wrap:wrap;
   }
-  #pasteStatus{
+  #pdfStatus{
     font-size:12.5px;
     color:#555;
   }
@@ -378,11 +368,6 @@
     font-size:11.5px;
     color:#888;
     font-style:italic;
-  }
-  .pdf-import-row{
-    margin-top:6px;
-    padding-top:14px;
-    border-top:1px dashed #ddd;
   }
 
   /* ===== Comparativo de indicadores (Agência x Gerentes) — layout em linhas ===== */
@@ -443,6 +428,49 @@
     font-size:20px;
     font-weight:800;
     color:#a3123a;
+  }
+  tbody tr.agency-row{
+    background:#eaf1fb !important;
+    font-weight:700;
+  }
+  tbody tr.agency-row td:first-child{color:#1e5fae;}
+
+  /* ===== Impressão do relatório de comparação ===== */
+  .print-report-btn{
+    margin-top:6px;
+  }
+  @media print{
+    body *{visibility:hidden;}
+    #indicatorCompareResult, #indicatorCompareResult *{visibility:visible;}
+    #indicatorCompareResult{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      margin:0;
+      padding:0;
+    }
+    .indicator-report{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      margin-bottom:18px;
+    }
+    .indicator-report-head{
+      break-after:avoid;
+      page-break-after:avoid;
+    }
+    .table-scroll{overflow:visible !important;}
+    table{
+      font-size:10.5px;
+      width:100% !important;
+      min-width:0 !important;
+    }
+    thead{display:table-header-group;}
+    tr{break-inside:avoid;page-break-inside:avoid;}
+    @page{
+      size:landscape;
+      margin:12mm;
+    }
   }
 
   /* ===== Histórico ===== */
@@ -589,28 +617,25 @@
       </div>
       <div class="card-body indic">
         <div></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="indicTotal" title="Clique para editar" id="sumIndicTotal"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="indicAtingidos" title="Clique para editar" id="sumIndicAtingidos"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="idb" title="Clique para editar" id="sumIdb"></div>
+        <div id="sumIndicTotal"></div>
+        <div id="sumIndicAtingidos"></div>
+        <div id="sumIdb"></div>
       </div>
       <div class="bar-track"><span class="seg-red" id="indicBarFill" style="width:0%"></span><span class="seg-empty" id="indicBarEmpty" style="width:100%"></span></div>
     </div>
 
     <div class="card">
       <div class="card-head pontos">
-        <div>PONTOS</div><div>possíveis</div><div>atingidos</div><div>% ating.</div><div>acelera</div><div>% final</div>
+        <div>PONTOS</div><div>possíveis</div><div>atingidos</div><div>% ating.</div>
       </div>
       <div class="card-body pontos">
         <div></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="pontosPossiveis" title="Clique para editar" id="sumPontosPossiveis"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="pontosAtingidos" title="Clique para editar" id="sumPontosAtingidos"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="pctAting" title="Clique para editar" id="sumPctAting"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="acelera" title="Clique para editar" id="sumAcelera"></div>
-        <div class="editable-cell" contenteditable="true" data-sumfield="pctFinal" title="Clique para editar" id="sumPctFinal"></div>
+        <div id="sumPontosPossiveis"></div>
+        <div id="sumPontosAtingidos"></div>
+        <div id="sumPctAting"></div>
       </div>
       <div class="bar-track">
         <span class="seg-red" id="pontosBarRed" style="width:0%"></span>
-        <span class="seg-orange" id="pontosBarOrange" style="width:0%"></span>
         <span class="seg-empty" id="pontosBarEmpty" style="width:100%"></span>
       </div>
     </div>
@@ -626,25 +651,18 @@
       <div id="indicatorCheckboxList" class="indicator-checklist" style="display:none;"></div>
     </div>
     <div id="indicatorCompareResult"></div>
+    <button id="printReportBtn" class="pill purple print-report-btn" type="button" style="cursor:pointer;">&#128424; Imprimir relatório</button>
   </div>
 
   <div class="paste-panel">
-    <div class="paste-head">&#128260; Atualizar indicadores (colar dados copiados do portal)</div>
-    <textarea id="pasteArea" placeholder="Selecione as linhas da tabela no portal (Ctrl+C) e cole aqui (Ctrl+V)..."></textarea>
-    <div class="paste-actions">
-      <button id="applyPasteBtn" class="pill purple" style="cursor:pointer;">Atualizar indicadores</button>
+    <div class="paste-head">&#128196; Atualizar indicadores (importar PDF exportado do portal)</div>
+    <label for="pdfFileInput" class="pill purple" style="cursor:pointer;display:inline-block;">&#128194; Escolher arquivo PDF</label>
+    <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
+    <div class="paste-actions" style="margin-top:14px;">
       <button id="saveNowBtn" class="pill dark" style="cursor:pointer;">&#128190; Salvar estado atual</button>
       <button id="toggleHistoryBtn" class="pill dark" style="cursor:pointer;">&#128220; Histórico</button>
-      <span id="pasteStatus"></span>
+      <span id="pdfStatus"></span>
     </div>
-
-    <div class="pdf-import-row">
-      <div class="paste-head" style="margin-top:16px;">&#128196; Ou importe o relatório exportado em PDF</div>
-      <label for="pdfFileInput" class="pill dark" style="cursor:pointer;display:inline-block;">&#128194; Escolher arquivo PDF</label>
-      <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
-      <span id="pdfStatus" style="margin-left:10px;font-size:12.5px;color:#555;"></span>
-    </div>
-
     <div id="fbStatus" class="fb-status">Conectando ao Firebase...</div>
   </div>
 
@@ -942,17 +960,21 @@ function buildSectionsView(containerEl, sectionsArr, opts){
     const secEl = document.createElement('div');
     secEl.className = 'section';
 
+    // total da seção = soma da pontuação (PTS) de cada indicador da família
+    let sectionTotalPts = 0;
+    sec.rows.forEach(r => {
+      const n = parseBR(calcPontos(r).pts);
+      if(!isNaN(n)) sectionTotalPts += n;
+    });
+
     const head = document.createElement('div');
     head.className = 'section-head';
     head.innerHTML = `
       <div class="left">
         <span class="name">${sec.name}</span>
-        <span class="weight">${sec.weight}</span>
-        <span class="icon-mini">&#128200; NEGÓCIOS</span>
-        ${sec.btn ? `<button class="btn ${sec.btnClass==='dark'?'dark':''}">&#9998; ${sec.btn}</button>` : ''}
       </div>
       <div class="left">
-        <span class="total">${sec.total}</span>
+        <span class="total">${formatBR(sectionTotalPts)}</span>
         <span class="caret" data-caret="${opts.prefix}-${sIdx}">&#9660;</span>
       </div>
     `;
@@ -1020,28 +1042,52 @@ function buildSectionsView(containerEl, sectionsArr, opts){
   });
 }
 
-function renderSummaryCards(sum){
-  document.getElementById('sumIndicTotal').textContent = sum.indicTotal || '';
-  document.getElementById('sumIndicAtingidos').textContent = sum.indicAtingidos || '';
-  document.getElementById('sumIdb').textContent = sum.idb || '';
-  document.getElementById('sumPontosPossiveis').textContent = sum.pontosPossiveis || '';
-  document.getElementById('sumPontosAtingidos').textContent = sum.pontosAtingidos || '';
-  document.getElementById('sumPctAting').textContent = sum.pctAting || '';
-  document.getElementById('sumAcelera').textContent = sum.acelera || '';
-  document.getElementById('sumPctFinal').textContent = sum.pctFinal || '';
+// Calcula o resumo dos cards INDICADORES/PONTOS a partir dos indicadores
+// da visão ativa (só considera indicadores com peso definido, > 0):
+//   INDICADORES: total = qtd. com peso definido; atingidos = qtd. com % Atg. >= 100%;
+//                IDB = atingidos / total (%)
+//   PONTOS: possíveis = soma dos pesos; atingidos = soma da pontuação (PTS) já obtida;
+//           % ating. = atingidos / possíveis (%)
+function calcResumoFromSections(sectionsArr){
+  let total = 0, atingidos = 0, pesoPossivel = 0, pesoAtingido = 0;
 
-  const idb = Math.max(0, Math.min(100, parseBR(sum.idb) || 0));
-  document.getElementById('indicBarFill').style.width = idb + '%';
-  document.getElementById('indicBarEmpty').style.width = (100 - idb) + '%';
+  getAllRowsFrom(sectionsArr).forEach(r => {
+    const peso = parseBR(r.peso);
+    if(isNaN(peso) || peso <= 0) return; // só conta indicadores com peso definido
 
-  const pctAting = Math.max(0, parseBR(sum.pctAting) || 0);
-  const acelera = Math.max(0, parseBR(sum.acelera) || 0);
-  const redW = Math.min(100, pctAting);
-  const orangeW = Math.min(100 - redW, acelera);
-  const emptyW = Math.max(0, 100 - redW - orangeW);
-  document.getElementById('pontosBarRed').style.width = redW + '%';
-  document.getElementById('pontosBarOrange').style.width = orangeW + '%';
-  document.getElementById('pontosBarEmpty').style.width = emptyW + '%';
+    total++;
+    pesoPossivel += peso;
+
+    const atg = parseBR(r.atg);
+    if(!isNaN(atg) && atg >= 100) atingidos++;
+
+    const ptsNum = parseBR(calcPontos(r).pts);
+    if(!isNaN(ptsNum)) pesoAtingido += ptsNum;
+  });
+
+  const idb = total > 0 ? (atingidos / total) * 100 : 0;
+  const pctAting = pesoPossivel > 0 ? (pesoAtingido / pesoPossivel) * 100 : 0;
+
+  return { total, atingidos, idb, pesoPossivel, pesoAtingido, pctAting };
+}
+
+function renderSummaryCards(sectionsArr){
+  const r = calcResumoFromSections(sectionsArr);
+
+  document.getElementById('sumIndicTotal').textContent = r.total;
+  document.getElementById('sumIndicAtingidos').textContent = r.atingidos;
+  document.getElementById('sumIdb').textContent = formatBR(r.idb);
+  document.getElementById('sumPontosPossiveis').textContent = formatBR(r.pesoPossivel);
+  document.getElementById('sumPontosAtingidos').textContent = formatBR(r.pesoAtingido);
+  document.getElementById('sumPctAting').textContent = formatBR(r.pctAting);
+
+  const idbClamped = Math.max(0, Math.min(100, r.idb));
+  document.getElementById('indicBarFill').style.width = idbClamped + '%';
+  document.getElementById('indicBarEmpty').style.width = (100 - idbClamped) + '%';
+
+  const pctClamped = Math.max(0, Math.min(100, r.pctAting));
+  document.getElementById('pontosBarRed').style.width = pctClamped + '%';
+  document.getElementById('pontosBarEmpty').style.width = (100 - pctClamped) + '%';
 }
 
 // Renderiza a visão ativa (Agência ou o gerente selecionado) usando o MESMO
@@ -1055,7 +1101,7 @@ function renderCurrentView(){
     subtitleEl.textContent = '1408-VJ-AV.P.ANT.CARLOS-UBH';
   }
 
-  renderSummaryCards(getActiveSummary());
+  renderSummaryCards(getActiveSectionsArr());
 
   buildSectionsView(container, getActiveSectionsArr(), {
     prefix: getActivePrefix(),
@@ -1102,19 +1148,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('focusout', (e) => {
-  const sumCell = e.target.closest && e.target.closest('[data-sumfield]');
-  if(sumCell){
-    const sum = getActiveSummary();
-    const field = sumCell.getAttribute('data-sumfield');
-    const newVal = sumCell.textContent.trim();
-    if(newVal !== (sum[field] || '')){
-      sum[field] = newVal;
-      renderSummaryCards(sum);
-      saveActiveSnapshot(`Edição manual do resumo — ${field}`);
-    }
-    return;
-  }
-
   const cell = e.target.closest && e.target.closest('.editable-cell[data-field]');
   if(!cell) return;
   const sIdx = parseInt(cell.getAttribute('data-skey'), 10);
@@ -1263,21 +1296,24 @@ function getSelectedIndicators(){
 // Monta a tabela de um único indicador: Agência + gerentes que o possuem,
 // classificados por % atingido (do menor para o maior), no layout em linhas.
 function buildIndicatorTable(indicatorName){
-  const rows = [];
-
   const agencyRow = findBestRowMatch(indicatorName, getAllRowsFrom(sections));
-  if(agencyRow){
-    rows.push({ label: 'Agência', row: agencyRow });
-  }
 
+  const managerRows = [];
   managers.forEach(mgr => {
     const mRow = findBestRowMatch(indicatorName, getAllRowsFrom(mgr.sections));
     if(mRow){
-      rows.push({ label: mgr.name, row: mRow });
+      managerRows.push({ label: mgr.name, row: mRow });
     }
   });
+  // gerentes: do maior para o menor % atingido
+  managerRows.sort((a,b) => (parseBR(b.row.atg) || 0) - (parseBR(a.row.atg) || 0));
 
-  rows.sort((a,b) => (parseBR(a.row.atg) || 0) - (parseBR(b.row.atg) || 0));
+  // Agência sempre no topo, independente do seu %
+  const rows = [];
+  if(agencyRow){
+    rows.push({ label: 'Agência', row: agencyRow });
+  }
+  rows.push(...managerRows);
 
   let totalPts = 0;
   const bodyRows = rows.map(item => {
@@ -1286,7 +1322,8 @@ function buildIndicatorTable(indicatorName){
     const ptsNum = parseBR(calc.pts);
     if(!isNaN(ptsNum)) totalPts += ptsNum;
     const defaClass = defa.text ? (defa.negative ? 'ic-bad' : 'ic-ok') : '';
-    return `<tr>
+    const rowClass = item.label === 'Agência' ? 'agency-row' : '';
+    return `<tr class="${rowClass}">
       <td>${item.label}</td>
       <td>${indicatorName}</td>
       <td>${formatNumberDisplay(item.row.meta) || '—'}</td>
@@ -1337,6 +1374,16 @@ document.getElementById('indicatorClearBtn').addEventListener('click', () => {
     cb.checked = false;
   });
   renderIndicatorComparison([]);
+});
+
+// imprime somente o relatório de comparação (a página inteira fica oculta na impressão)
+document.getElementById('printReportBtn').addEventListener('click', () => {
+  const wrap = document.getElementById('indicatorCompareResult');
+  if(!wrap || !wrap.innerHTML.trim()){
+    window.alert('Selecione ao menos um indicador antes de imprimir.');
+    return;
+  }
+  window.print();
 });
 
 // qualquer alteração na seleção já atualiza a tabela na hora
@@ -1413,6 +1460,31 @@ function parsePastedRows(text){
   return parsed;
 }
 
+// Uma linha é considerada cabeçalho de família/seção quando, tirando números
+// e pontuação, o texto restante é inteiramente MAIÚSCULO (ex.: "NEGÓCIOS
+// CRÉDITO", "GESTÃO DE RISCO", "QUALIDADE") — diferente dos nomes de
+// indicador, que sempre vêm em texto normal (ex.: "Captação Líquida PJ").
+function looksLikeSectionHeader(line){
+  const stripped = line.replace(/[\d.,%]/g, '').trim();
+  if(stripped.length < 3 || stripped.length > 45) return false;
+  const lettersOnly = stripped.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ]/g, '');
+  if(lettersOnly.length < 3) return false;
+  return lettersOnly === lettersOnly.toUpperCase();
+}
+
+// Percorre as linhas do PDF em ordem e marca a qual família/seção cada linha
+// pertence, com base no último cabeçalho de seção visto acima dela.
+function tagLinesWithSection(lines){
+  let currentSection = null;
+  return lines.map(line => {
+    if(looksLikeSectionHeader(line)){
+      currentSection = line.trim();
+      return { text: line, section: currentSection, isHeader: true };
+    }
+    return { text: line, section: currentSection, isHeader: false };
+  });
+}
+
 // =====================================================================
 // Importar dados de um PDF exportado do portal de origem
 // =====================================================================
@@ -1452,6 +1524,114 @@ async function extractLinesFromPdf(arrayBuffer){
   return lines;
 }
 
+// Compara a estrutura extraída do PDF (famílias + indicadores + pesos) com o
+// mapa atual e corrige o que for necessário:
+//  - indicador já existe             -> atualiza Meta/Realizado (e Peso, se mudou)
+//  - indicador mudou de família      -> move para a família correta no PDF
+//  - indicador novo no PDF           -> adiciona na família correspondente
+//    (cria a família se ela também for nova)
+//  - indicador do mapa não está mais no PDF -> fica marcado como candidato a
+//    remoção (só é removido de fato depois de confirmação do usuário)
+function syncStructureFromPdf(lines, sectionsArr){
+  const tagged = tagLinesWithSection(lines);
+
+  const parsedWithSection = [];
+  tagged.forEach(({ text, section, isHeader }) => {
+    if(isHeader) return;
+    const [parsedRow] = parsePastedRows(text);
+    if(parsedRow) parsedWithSection.push({ ...parsedRow, section: section || null });
+  });
+
+  const allRows = [];
+  sectionsArr.forEach((sec, sIdx) => sec.rows.forEach((r, i) => allRows.push({ r, sIdx, i, matched:false })));
+
+  let updated = 0, pesoChanged = 0, moved = 0, added = 0;
+  const newSectionsCreated = new Set();
+  const movePlan = [];
+  const addPlan = [];
+
+  function findOrCreateSection(sectionName){
+    if(!sectionName) return null;
+    let target = sectionsArr.find(s => nameSimilarity(normalizeName(s.name), normalizeName(sectionName)) >= 0.6);
+    if(!target){
+      target = { name: sectionName, weight:'', btn:null, btnClass:'purple', total:'0,00', rows: [] };
+      sectionsArr.push(target);
+      newSectionsCreated.add(sectionName);
+    }
+    return target;
+  }
+
+  parsedWithSection.forEach(p => {
+    const nName = normalizeName(p.name);
+    let best = null, bestScore = 0;
+    allRows.forEach(item => {
+      if(item.matched) return;
+      const score = nameSimilarity(nName, normalizeName(item.r.name));
+      if(score > bestScore){ bestScore = score; best = item; }
+    });
+
+    if(best && bestScore >= 0.55){
+      best.matched = true;
+      if(p.meta) best.r.meta = formatNumberDisplay(p.meta);
+      if(p.realizado) best.r.realizado = formatNumberDisplay(p.realizado);
+      if(p.peso && p.peso !== best.r.peso){
+        best.r.peso = p.peso;
+        pesoChanged++;
+      }
+      if(p.meta || p.realizado) recomputeAtg(best.r);
+      updated++;
+
+      if(p.section){
+        const currentSec = sectionsArr[best.sIdx];
+        const sameFamily = nameSimilarity(normalizeName(currentSec.name), normalizeName(p.section)) >= 0.5;
+        if(!sameFamily){
+          movePlan.push({ item: best, sectionName: p.section });
+        }
+      }
+    } else {
+      addPlan.push(p);
+    }
+  });
+
+  // aplica as mudanças de família primeiro (remove da seção antiga em ordem segura)
+  const removalsBySection = {};
+  movePlan.forEach(({ item }) => {
+    (removalsBySection[item.sIdx] = removalsBySection[item.sIdx] || []).push(item.i);
+  });
+  Object.keys(removalsBySection).forEach(sIdxStr => {
+    const sIdx = parseInt(sIdxStr, 10);
+    removalsBySection[sIdx].sort((a,b) => b - a).forEach(i => {
+      sectionsArr[sIdx].rows.splice(i, 1);
+    });
+  });
+  movePlan.forEach(({ item, sectionName }) => {
+    const target = findOrCreateSection(sectionName);
+    if(target){
+      target.rows.push(item.r);
+      moved++;
+    }
+  });
+
+  // adiciona indicadores novos
+  addPlan.forEach(p => {
+    const target = findOrCreateSection(p.section) || sectionsArr[sectionsArr.length - 1];
+    if(!target) return;
+    const newRow = row(p.name, p.peso || '0,0', '', '', p.meta, p.realizado, '0,00', '', '', '', '0,00', '');
+    recomputeAtg(newRow);
+    target.rows.push(newRow);
+    added++;
+  });
+
+  // indicadores do mapa que não apareceram no PDF (candidatos a remoção)
+  const toRemove = allRows.filter(item => !item.matched);
+
+  return {
+    updated, pesoChanged, moved, added,
+    newSectionsCreated: Array.from(newSectionsCreated),
+    toRemove,
+  };
+}
+
 document.getElementById('pdfFileInput').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   const statusEl = document.getElementById('pdfStatus');
@@ -1468,27 +1648,49 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e) => 
 
     const arrayBuffer = await file.arrayBuffer();
     const lines = await extractLinesFromPdf(arrayBuffer);
-    const text = lines.join('\n');
 
-    const parsed = parsePastedRows(text);
-    if(parsed.length === 0){
-      statusEl.textContent = 'Não consegui reconhecer indicadores neste PDF.';
+    if(lines.length === 0){
+      statusEl.textContent = 'Não consegui extrair texto deste PDF.';
       statusEl.style.color = '#a3123a';
       return;
     }
 
-    const { updated, notFound } = applyParsedDataToSections(parsed, getActiveSectionsArr());
+    const sectionsArr = getActiveSectionsArr();
+    const result = syncStructureFromPdf(lines, sectionsArr);
+
+    const parts = [];
+    parts.push(`${result.updated} indicador(es) atualizado(s)`);
+    if(result.pesoChanged) parts.push(`${result.pesoChanged} com peso alterado`);
+    if(result.moved) parts.push(`${result.moved} movido(s) de família`);
+    if(result.added) parts.push(`${result.added} indicador(es) novo(s) adicionado(s)`);
+    if(result.newSectionsCreated.length) parts.push(`nova(s) família(s): ${result.newSectionsCreated.join(', ')}`);
+
+    if(result.toRemove.length > 0){
+      const names = result.toRemove.map(item => item.r.name).join('\n- ');
+      const ok = window.confirm(
+        `${result.toRemove.length} indicador(es) do mapa atual não aparecem mais neste PDF:\n\n- ${names}\n\n` +
+        `Deseja REMOVER esses indicadores do mapa? (Cancelar mantém como estão, sem atualizar os valores deles)`
+      );
+      if(ok){
+        result.toRemove.forEach(item => {
+          const sec = sectionsArr[item.sIdx];
+          if(!sec) return;
+          const idx = sec.rows.indexOf(item.r);
+          if(idx !== -1) sec.rows.splice(idx, 1);
+        });
+        parts.push(`${result.toRemove.length} indicador(es) removido(s) do mapa`);
+      } else {
+        parts.push(`${result.toRemove.length} indicador(es) não localizado(s) no PDF (mantidos sem alteração)`);
+      }
+    }
+
     renderCurrentView();
-    saveActiveSnapshot(`Importação de PDF — ${updated} indicador(es)`);
+    saveActiveSnapshot(`Importação de PDF (estrutura) — ${parts.join('; ')}`);
     refreshIndicatorChecklist();
     refreshIndicatorCompareIfOpen();
 
-    let msg = `${updated} indicador(es) atualizado(s) a partir do PDF.`;
-    if(notFound.length){
-      msg += ` Não localizado(s): ${notFound.join(', ')}`;
-    }
-    statusEl.textContent = msg;
-    statusEl.style.color = notFound.length ? '#b5730a' : '#2e7d32';
+    statusEl.textContent = parts.join(' · ') + '.';
+    statusEl.style.color = '#2e7d32';
   } catch(err){
     console.error('Erro ao ler PDF:', err);
     statusEl.textContent = 'Erro ao ler o PDF: ' + err.message;
@@ -1530,38 +1732,6 @@ function applyParsedDataToSections(parsedRows, sectionsArr){
 function applyParsedData(parsedRows){
   return applyParsedDataToSections(parsedRows, sections);
 }
-
-document.getElementById('applyPasteBtn').addEventListener('click', () => {
-  const textEl = document.getElementById('pasteArea');
-  const statusEl = document.getElementById('pasteStatus');
-  const text = textEl.value;
-
-  if(!text.trim()){
-    statusEl.textContent = 'Cole os dados copiados do portal antes de atualizar.';
-    statusEl.style.color = '#a3123a';
-    return;
-  }
-
-  const parsed = parsePastedRows(text);
-  if(parsed.length === 0){
-    statusEl.textContent = 'Não consegui identificar linhas de indicadores no texto colado. Selecione as linhas direto da tabela do portal.';
-    statusEl.style.color = '#a3123a';
-    return;
-  }
-
-  const { updated, notFound } = applyParsedDataToSections(parsed, getActiveSectionsArr());
-  renderCurrentView();
-  saveActiveSnapshot(`Colagem manual — ${updated} indicador(es)`);
-  refreshIndicatorChecklist();
-  refreshIndicatorCompareIfOpen();
-
-  let msg = `${updated} indicador(es) atualizado(s).`;
-  if(notFound.length){
-    msg += ` Não localizado(s): ${notFound.join(', ')}`;
-  }
-  statusEl.textContent = msg;
-  statusEl.style.color = notFound.length ? '#b5730a' : '#2e7d32';
-});
 
 // =====================================================================
 // FIREBASE — sincronização do estado atual e histórico de atualizações
