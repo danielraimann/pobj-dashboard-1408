@@ -3,551 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indicadores Prioritários do POBJ — 1408-VJ-AV.P.ANT.CARLOS-UBH</title>
-<!-- Firebase (compat) — usado para salvar o estado atual e o histórico de atualizações -->
+<title>Indicadores POBJ — Agência 1408</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<!-- PDF.js — usado para ler o PDF exportado do portal e extrair os indicadores -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root{
-    --maroon-1:#5a0f2a;
-    --maroon-2:#8a1538;
-    --purple-1:#6c2a63;
-    --purple-2:#5a2153;
-    --purple-dark:#3d1a3f;
-    --blue-band:#1e5fae;
-    --blue-band-2:#2a72c8;
-    --ink:#232323;
-    --muted:#666;
-    --line:#dcdcdc;
-    --rowA:#ffffff;
-    --rowB:#f4f4f6;
-    --sub-text:#3a4a8a;
-    --ok:#2e7d32;
-    --warn:#e8890c;
-    --q:#1565c0;
-    --bad:#d32f2f;
-    --low:#8b2f8f;
-    --nc:#8a8a8a;
+    --maroon-1:#5a0f2a;--maroon-2:#8a1538;--purple-1:#6c2a63;--purple-2:#5a2153;--purple-dark:#3d1a3f;
+    --blue-band:#1e5fae;--blue-band-2:#2a72c8;--ink:#232323;--muted:#666;--line:#dcdcdc;
+    --rowA:#ffffff;--rowB:#f4f4f6;--ok:#2e7d32;--warn:#e8890c;--q:#1565c0;--bad:#d32f2f;--low:#8b2f8f;--nc:#8a8a8a;
     font-family:'Segoe UI',Arial,Helvetica,sans-serif;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:#e9e9ec;
-    color:var(--ink);
-    font-size:14px;
-    -webkit-font-smoothing:antialiased;
-  }
-  /* ===== Top bar ===== */
-  .topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    background:linear-gradient(90deg,var(--maroon-1),var(--maroon-2) 70%, #a3355a);
-    color:#fff;
-    padding:14px 20px;
-    gap:12px;
-    flex-wrap:wrap;
-  }
+  body{margin:0;background:#e9e9ec;color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg,var(--maroon-1),var(--maroon-2) 70%, #a3355a);color:#fff;padding:14px 20px;gap:12px;flex-wrap:wrap;}
   .topbar-left{display:flex;align-items:center;gap:14px;}
-  .hamburger{font-size:26px;line-height:1;cursor:pointer;}
-  .topbar h1{font-size:22px;margin:0;font-weight:600;letter-spacing:.2px;}
-  .brand{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;letter-spacing:.5px;}
-  .brand .dot{
-    width:26px;height:26px;border-radius:50%;
-    background:#fff;position:relative;display:inline-block;
-  }
-  .brand .dot::after{
-    content:"";position:absolute;inset:6px;border-radius:50%;
-    border:3px solid var(--maroon-2);border-top-color:transparent;transform:rotate(45deg);
-  }
-  .filter-select-wrap select{
-    padding:8px 10px;
-    border-radius:4px;
-    border:1px solid rgba(255,255,255,.5);
-    background:#fff;
-    color:#3d1a3f;
-    font-size:12.5px;
-    font-weight:600;
-    cursor:pointer;
-  }
-
-  /* ===== Filters ===== */
-  .filters{
-    background:#fff;
-    padding:14px 20px 8px;
-    display:grid;
-    grid-template-columns:repeat(5,minmax(0,1fr));
-    gap:12px 16px;
-    border-bottom:1px solid var(--line);
-  }
-  .field label{
-    display:block;font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:600;
-    text-transform:none;
-  }
-  .field select{
-    width:100%;
-    padding:7px 8px;
-    border:1px solid #c7c7c7;
-    border-radius:3px;
-    background:#fff;
-    font-size:13px;
-    color:#333;
-    appearance:none;
-    background-image:linear-gradient(45deg,transparent 50%,#888 50%),linear-gradient(135deg,#888 50%,transparent 50%);
-    background-position:calc(100% - 16px) 12px, calc(100% - 11px) 12px;
-    background-size:5px 5px,5px 5px;
-    background-repeat:no-repeat;
-  }
-
-  .navrow{
-    background:#fff;
-    padding:10px 20px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    border-bottom:1px solid var(--line);
-  }
-  .navrow.right{justify-content:flex-end;}
-  .pill{
-    border:none;
-    color:#fff;
-    padding:9px 16px;
-    border-radius:4px;
-    font-size:12.5px;
-    font-weight:600;
-    cursor:default;
-    white-space:nowrap;
-  }
+  .topbar h1{font-size:20px;margin:0;font-weight:600;}
+  .brand{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;}
+  .brand .dot{width:24px;height:24px;border-radius:50%;background:#fff;position:relative;display:inline-block;}
+  .brand .dot::after{content:"";position:absolute;inset:5px;border-radius:50%;border:3px solid var(--maroon-2);border-top-color:transparent;transform:rotate(45deg);}
+  .topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .pill{border:none;color:#fff;padding:9px 16px;border-radius:4px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
   .pill.purple{background:linear-gradient(180deg,var(--purple-1),var(--purple-2));}
   .pill.dark{background:linear-gradient(180deg,#4a1f4a,var(--purple-dark));}
-
-  /* ===== Title band ===== */
-  .titleband{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:linear-gradient(90deg,var(--blue-band),var(--blue-band-2));
-    color:#fff;
-    padding:16px 22px;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .titleband .t1{font-size:20px;font-weight:800;letter-spacing:.3px;}
+  .pill.red{background:linear-gradient(180deg,#8a2f2f,#5a1a1a);}
+  .icon-btn{cursor:pointer;border:1px solid #c7c7c7;background:#fff;border-radius:3px;padding:6px 9px;font-size:13px;}
+  .filters{background:#fff;padding:14px 20px;display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;border-bottom:1px solid var(--line);}
+  .field{min-width:180px;flex:1;}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;}
+  .field select{width:100%;padding:7px 8px;border:1px solid #c7c7c7;border-radius:3px;background:#fff;font-size:13px;color:#333;}
+  .titleband{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(90deg,var(--blue-band),var(--blue-band-2));color:#fff;padding:16px 22px;flex-wrap:wrap;gap:8px;}
+  .titleband .t1{font-size:19px;font-weight:800;}
   .titleband .t2{font-size:14px;font-weight:500;opacity:.95;margin-top:2px;}
   .titleband .right{text-align:right;}
-  .titleband .right .big{font-size:19px;font-weight:800;}
-  .titleband .right .small{font-size:13px;opacity:.9;}
-
-  /* ===== Summary cards ===== */
-  .summary-wrap{
-    display:flex;
-    gap:22px;
-    flex-wrap:wrap;
-    padding:20px 22px 6px;
-  }
-  .card{
-    flex:1 1 380px;
-    background:#fff;
-    border-radius:6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.12);
-    overflow:hidden;
-  }
-  .card-head{
-    display:grid;
-    background:linear-gradient(180deg,var(--blue-band-2),var(--blue-band));
-    color:#fff;
-    font-weight:700;
-    font-size:13px;
-  }
-  .card-head.indic{grid-template-columns:1.4fr 1fr 1fr 1fr;}
-  .card-head.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr;}
+  .titleband .right .big{font-size:16px;font-weight:800;}
+  .summary-wrap{display:flex;gap:22px;flex-wrap:wrap;padding:20px 22px 6px;}
+  .card{flex:1 1 340px;background:#fff;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.12);overflow:hidden;}
+  .card-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;background:linear-gradient(180deg,var(--blue-band-2),var(--blue-band));color:#fff;font-weight:700;font-size:13px;}
   .card-head div, .card-body div{padding:9px 8px;text-align:center;}
   .card-head div:first-child, .card-body div:first-child{text-align:left;padding-left:14px;}
-  .card-body{
-    display:grid;
-    font-weight:700;
-    font-size:16px;
-    color:#222;
-  }
-  .card-body.indic{grid-template-columns:1.4fr 1fr 1fr 1fr;}
-  .card-body.pontos{grid-template-columns:1.2fr 1fr 1fr 1fr;}
-  .bar-track{
-    height:7px;
-    background:#eee;
-    margin:0 14px 14px;
-    border-radius:4px;
-    overflow:hidden;
-    display:flex;
-  }
+  .card-body{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;font-weight:700;font-size:16px;color:#222;}
+  .bar-track{height:7px;background:#eee;margin:0 14px 14px;border-radius:4px;overflow:hidden;display:flex;}
   .bar-track span{display:block;height:100%;}
   .seg-red{background:#d32f2f;}
-  .seg-orange{background:#f0a63a;}
-  .seg-yellow{background:#f4d13c;}
   .seg-empty{background:#e9e9e9;}
-
-  /* ===== Sections ===== */
-  .section{
-    margin:22px 22px 0;
-    background:#fff;
-    border-radius:6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.10);
-    overflow:hidden;
-  }
-  .section:last-of-type{margin-bottom:26px;}
-  .section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 16px;
-    gap:14px;
-    flex-wrap:wrap;
-    cursor:pointer;
-    user-select:none;
-  }
-  .section-head .left{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-  .section-head .name{color:#a3123a;font-weight:800;font-style:italic;font-size:17px;letter-spacing:.2px;}
-  .section-head .weight{color:#a3123a;font-weight:800;font-style:italic;font-size:17px;}
-  .section-head .icon-mini{
-    display:inline-flex;align-items:center;gap:2px;color:#a3123a;font-size:11px;font-weight:700;
-  }
-  .section-head .btn{
-    border:none;color:#fff;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:700;
-    background:linear-gradient(180deg,var(--purple-1),var(--purple-2));
-    display:flex;align-items:center;gap:6px;
-  }
-  .section-head .btn.dark{background:linear-gradient(180deg,#4a1f4a,var(--purple-dark));}
-  .section-head .total{font-weight:800;font-size:17px;color:#a3123a;min-width:60px;text-align:right;}
-  .section-head .caret{font-size:12px;color:#888;margin-left:6px;}
-
-  .table-scroll{overflow-x:auto;border-top:1px solid var(--line);}
-  table{
-    border-collapse:collapse;
-    width:100%;
-    min-width:760px;
-    font-size:12.5px;
-  }
-  thead th{
-    background:#dcdcdc;
-    color:#333;
-    font-weight:700;
-    padding:7px 8px;
-    text-align:right;
-    white-space:nowrap;
-    border-bottom:1px solid #c8c8c8;
-  }
+  .panel{margin:20px 22px 0;background:#fff;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.10);padding:14px 16px;}
+  .panel-head{font-weight:700;color:#5a2153;margin-bottom:10px;font-size:14px;}
+  .panel-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .status-text{font-size:12.5px;color:#555;}
+  .fb-status{margin-top:10px;font-size:11.5px;color:#888;font-style:italic;}
+  .suggestions-box{margin-top:12px;border:1px solid #e4dbe6;border-radius:6px;padding:10px;background:#faf7fb;}
+  .suggestion-item{display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:13px;}
+  .suggestion-item input{cursor:pointer;}
+  .indicators-panel{margin:20px 22px 26px;background:#fff;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.10);overflow:hidden;}
+  .indicators-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;flex-wrap:wrap;gap:10px;border-bottom:1px solid var(--line);}
+  .indicators-head .name{color:#a3123a;font-weight:800;font-size:17px;font-style:italic;}
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;min-width:720px;font-size:12.5px;}
+  thead th{background:#dcdcdc;color:#333;font-weight:700;padding:7px 8px;text-align:right;white-space:nowrap;border-bottom:1px solid #c8c8c8;}
   thead th:first-child{text-align:left;}
-  tbody td{
-    padding:7px 8px;
-    text-align:right;
-    border-bottom:1px solid #ececec;
-    white-space:nowrap;
-  }
-  tbody td:first-child{
-    text-align:left;
-    white-space:normal;
-    min-width:230px;
-  }
+  tbody td{padding:7px 8px;text-align:right;border-bottom:1px solid #ececec;white-space:nowrap;}
+  tbody td:first-child{text-align:left;white-space:normal;min-width:220px;}
   tbody tr:nth-child(even){background:var(--rowB);}
   tbody tr:hover{background:#eef3fb;}
-  tbody tr.child td:first-child{
-    color:var(--sub-text);
-    font-style:italic;
-    padding-left:26px;
-  }
-  tbody tr.parent-row td:first-child{font-weight:600;color:#333;}
-  td.editable-cell, div.editable-cell{
-    cursor:text;
-    outline:none;
-    transition:background .15s;
-  }
-  td.editable-cell:hover, div.editable-cell:hover{
-    background:#fff8e6;
-    box-shadow:inset 0 0 0 1px #e8d8a0;
-  }
-  td.editable-cell:focus, div.editable-cell:focus{
-    background:#fff3cf;
-    box-shadow:inset 0 0 0 1px #e8b93f;
-  }
-  .toggle-caret{
-    display:inline-block;width:14px;color:#5a2153;font-weight:900;margin-right:6px;cursor:pointer;
-  }
   .icon-cell{font-weight:900;}
-  .ic-ok{color:var(--ok);}
-  .ic-warn{color:var(--warn);}
-  .ic-q{color:var(--q);}
-  .ic-bad{color:var(--bad);}
-  .ic-low{color:var(--low);}
-  .ic-nc{color:var(--nc);}
-  tr.collapsed{display:none;}
-
-  /* ---- show/hide per indicator ---- */
-  td.action-cell{
-    text-align:center;
-    white-space:nowrap;
-  }
-  .eye-btn{
-    border:1px solid #c9c9c9;
-    background:#fff;
-    color:#5a2153;
-    border-radius:4px;
-    padding:4px 8px;
-    font-size:12px;
-    cursor:pointer;
-    line-height:1;
-  }
-  .eye-btn:hover{background:#f2ecf5;}
-  /* Por padrão, indicador oculto some completamente da tela */
-  tbody tr.row-hidden{display:none;}
-  /* linhas fora da faixa de % atingido selecionada no filtro do topo */
-  tbody tr.filter-hide{display:none !important;}
-  /* Modo "revisão de ocultos": traz de volta, esmaecido, para poder reexibir */
-  body.reveal-hidden tbody tr.row-hidden{
-    display:table-row;
-    background:#f8f8f8;
-    opacity:.6;
-  }
-  body.reveal-hidden tbody tr.row-hidden td:not(.action-cell):not(.name-cell){
-    display:table-cell;
-  }
-  body.reveal-hidden tbody tr.row-hidden td.name-cell{
-    color:#aaa;
-    text-decoration:line-through;
-  }
-  body.reveal-hidden tbody tr.row-hidden .eye-btn{
-    color:#999;
-    border-color:#ddd;
-  }
-
-  /* ===== Legend ===== */
-  .legend{
-    margin:0 22px 30px;
-    background:#fff;
-    border-radius:6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.10);
-    padding:12px 16px;
-    display:flex;
-    gap:22px;
-    flex-wrap:wrap;
-    align-items:center;
-    font-size:12.5px;
-  }
+  .ic-ok{color:var(--ok);} .ic-warn{color:var(--warn);} .ic-q{color:var(--q);}
+  .ic-bad{color:var(--bad);} .ic-low{color:var(--low);} .ic-nc{color:var(--nc);}
+  td.editable-cell{cursor:text;outline:none;transition:background .15s;}
+  td.editable-cell:hover{background:#fff8e6;box-shadow:inset 0 0 0 1px #e8d8a0;}
+  td.editable-cell:focus{background:#fff3cf;box-shadow:inset 0 0 0 1px #e8b93f;}
+  tr.row-hidden{display:none;}
+  tr.filter-hide{display:none !important;}
+  .empty-msg{text-align:center;color:#888;font-style:italic;padding:24px;}
+  .legend{margin:0 22px 30px;background:#fff;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.10);padding:12px 16px;display:flex;gap:22px;flex-wrap:wrap;align-items:center;font-size:12.5px;}
   .legend b{margin-right:6px;color:#333;}
   .legend .item{display:flex;align-items:center;gap:6px;}
   .legend .swatch{font-weight:900;width:16px;text-align:center;}
-
-  /* ===== Paste panel ===== */
-  .paste-panel{
-    margin:20px 22px 0;
-    background:#fff;
-    border-radius:6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.10);
-    padding:14px 16px;
-  }
-  .paste-head{
-    font-weight:700;
-    color:#5a2153;
-    margin-bottom:8px;
-    font-size:14px;
-  }
-  .paste-actions{
-    display:flex;
-    align-items:center;
-    gap:14px;
-    margin-top:10px;
-    flex-wrap:wrap;
-  }
-  #pdfStatus{
-    font-size:12.5px;
-    color:#555;
-  }
-  .fb-status{
-    margin-top:10px;
-    font-size:11.5px;
-    color:#888;
-    font-style:italic;
-  }
-
-  /* ===== Comparativo de indicadores (Agência x Gerentes) — layout em linhas ===== */
-  .indicator-multiselect{position:relative;}
-  .indicator-checklist{
-    margin-top:10px;
-    border:1px solid #ddd;
-    border-radius:6px;
-    max-height:240px;
-    overflow-y:auto;
-    padding:6px 4px;
-    background:#fafafa;
-  }
-  .indicator-check-item{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:7px 10px;
-    font-size:13px;
-    color:#333;
-    cursor:pointer;
-  }
+  footer{text-align:left;padding:10px 22px 26px;color:#777;font-size:11.5px;}
+  .indicator-checklist{margin-top:10px;border:1px solid #ddd;border-radius:6px;max-height:240px;overflow-y:auto;padding:6px 4px;background:#fafafa;}
+  .indicator-check-item{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:13px;color:#333;cursor:pointer;}
   .indicator-check-item:hover{background:#f0eaf1;}
-  .indicator-check-item input{cursor:pointer;flex:0 0 auto;}
-
-  #indicatorCompareResult{
-    margin-top:16px;
-  }
-  .indicator-report{
-    margin-bottom:26px;
-  }
+  .indicator-report{margin-bottom:26px;}
   .indicator-report:last-child{margin-bottom:0;}
-  .indicator-report-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:10px;
-    padding-bottom:8px;
-    border-bottom:2px solid #eee;
-  }
-  .ir-label{
-    font-size:10.5px;
-    color:#888;
-    text-transform:uppercase;
-    letter-spacing:.4px;
-    display:block;
-  }
-  .ir-title{
-    font-size:18px;
-    font-weight:800;
-    color:#232323;
-  }
+  .indicator-report-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #eee;}
+  .ir-label{font-size:10.5px;color:#888;text-transform:uppercase;letter-spacing:.4px;display:block;}
+  .ir-title{font-size:18px;font-weight:800;color:#232323;}
   .ir-total{text-align:right;}
-  .ir-total-value{
-    display:block;
-    font-size:20px;
-    font-weight:800;
-    color:#a3123a;
-  }
-  tbody tr.agency-row{
-    background:#eaf1fb !important;
-    font-weight:700;
-  }
-  tbody tr.agency-row td:first-child{color:#1e5fae;}
-
-  /* ===== Impressão do relatório de comparação ===== */
-  .print-report-btn{
-    margin-top:6px;
-  }
+  .ir-total-value{display:block;font-size:20px;font-weight:800;color:#a3123a;}
+  tbody tr.group-row{background:#eaf1fb !important;font-weight:700;}
+  tbody tr.group-row td:first-child{color:#1e5fae;}
   @media print{
     body *{visibility:hidden;}
     #indicatorCompareResult, #indicatorCompareResult *{visibility:visible;}
-    #indicatorCompareResult{
-      position:absolute;
-      top:0;
-      left:0;
-      width:100%;
-      margin:0;
-      padding:0;
-    }
-    .indicator-report{
-      break-inside:avoid;
-      page-break-inside:avoid;
-      margin-bottom:18px;
-    }
-    .indicator-report-head{
-      break-after:avoid;
-      page-break-after:avoid;
-    }
+    #indicatorCompareResult{position:absolute;top:0;left:0;width:100%;margin:0;padding:0;}
+    .indicator-report{break-inside:avoid;page-break-inside:avoid;margin-bottom:18px;}
+    .indicator-report-head{break-after:avoid;}
     .table-scroll{overflow:visible !important;}
-    table{
-      font-size:10.5px;
-      width:100% !important;
-      min-width:0 !important;
-    }
-    thead{display:table-header-group;}
+    table{font-size:10.5px;width:100% !important;min-width:0 !important;}
     tr{break-inside:avoid;page-break-inside:avoid;}
-    @page{
-      size:landscape;
-      margin:12mm;
-    }
-  }
-
-  /* ===== Histórico ===== */
-  .history-banner{
-    margin:14px 22px 0;
-    background:#fff3d6;
-    border:1px solid #e8c46b;
-    border-radius:6px;
-    padding:10px 16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    font-size:13px;
-    color:#6b5010;
-  }
-  .history-panel{
-    margin:16px 22px 0;
-    background:#fff;
-    border-radius:6px;
-    box-shadow:0 1px 4px rgba(0,0,0,.10);
-    padding:14px 16px;
-  }
-  .hist-list{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    max-height:260px;
-    overflow-y:auto;
-  }
-  .hist-item{
-    text-align:left;
-    background:#f6f2f7;
-    border:1px solid #e4dbe6;
-    border-radius:4px;
-    padding:8px 10px;
-    font-size:12.5px;
-    color:#3d1a3f;
-    cursor:pointer;
-  }
-  .hist-item:hover{background:#efe4f1;}
-  .hist-empty{
-    font-size:12.5px;
-    color:#888;
-    font-style:italic;
-  }
-
-  footer{
-    text-align:left;
-    padding:10px 22px 26px;
-    color:#777;
-    font-size:11.5px;
-  }
-
-  /* ===== Responsive ===== */
-  @media (max-width:900px){
-    .filters{grid-template-columns:repeat(2,1fr);}
+    @page{size:landscape;margin:12mm;}
   }
   @media (max-width:640px){
-    .topbar h1{font-size:17px;}
-    .brand{font-size:16px;}
-    #revealBtn{font-size:11px;padding:7px 10px;}
-    .filters{grid-template-columns:1fr 1fr;padding:12px 14px;}
-    .navrow{padding:8px 14px;}
-    .pill{padding:7px 10px;font-size:11.5px;}
+    .topbar h1{font-size:16px;}
+    .filters{padding:12px 14px;}
     .titleband{padding:14px;}
-    .titleband .t1{font-size:16px;}
+    .titleband .t1{font-size:15px;}
     .summary-wrap{padding:16px 14px 4px;gap:14px;}
-    .card-head div,.card-body div{padding:7px 5px;font-size:11px;}
-    .card-body{font-size:13px;}
-    .section{margin:16px 14px 0;}
-    .section-head{padding:10px 12px;}
-    .section-head .name,.section-head .weight{font-size:14.5px;}
-    .legend{margin:0 14px 24px;padding:10px 12px;font-size:11.5px;gap:14px;}
-    .history-banner{margin:12px 14px 0;padding:10px 12px;}
-    .history-panel{margin:14px 14px 0;padding:12px;}
+    .panel{margin:16px 14px 0;padding:12px;}
+    .indicators-panel{margin:16px 14px 22px;}
+    .legend{margin:0 14px 24px;padding:10px 12px;}
   }
 </style>
 </head>
@@ -555,19 +119,10 @@
 
   <div class="topbar">
     <div class="topbar-left">
-      <span class="hamburger">&#9776;</span>
-      <h1>Indicadores Prioritários do POBJ</h1>
+      <span style="font-size:22px;">&#9776;</span>
+      <h1>Indicadores POBJ — Agência 1408</h1>
     </div>
-    <div class="topbar-right" style="display:flex;align-items:center;gap:14px;">
-      <div class="filter-select-wrap">
-        <select id="atgFilter" title="Filtrar por % atingido">
-          <option value="todos">Todos os indicadores</option>
-          <option value="zerados">Zerados (0%)</option>
-          <option value="abaixo70">Abaixo de 70%</option>
-          <option value="entre70e90">Entre 70% e 89,99%</option>
-          <option value="acima100">Acima de 100%</option>
-        </select>
-      </div>
+    <div class="topbar-right">
       <button id="revealBtn" class="pill purple" style="background:linear-gradient(180deg,#7a3570,#5a2153);">
         &#128065; Itens ocultos (<span id="hiddenCount">0</span>)
       </button>
@@ -576,108 +131,122 @@
   </div>
 
   <div class="filters">
-    <div class="field"><label>Agência</label>
-      <select><option>1408-VJ-AV.P.ANT.CARLOS-UBH</option></select></div>
     <div class="field">
-      <label>Gerente / Consolidação</label>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-        <select id="gerenteSelect" style="flex:2;min-width:150px;">
-          <option value="__agencia__">Consolidado da Unidade</option>
-        </select>
-        <button id="addManagerBtn" title="Adicionar gerente" style="cursor:pointer;border:1px solid #c7c7c7;background:#fff;border-radius:3px;padding:6px 9px;font-size:13px;">&#10133;</button>
-        <button id="renameManagerBtn" title="Renomear gerente" style="cursor:pointer;border:1px solid #c7c7c7;background:#fff;border-radius:3px;padding:6px 9px;font-size:13px;">&#9998;</button>
-        <button id="deleteManagerBtn" title="Excluir gerente" style="cursor:pointer;border:1px solid #c7c7c7;background:#fff;border-radius:3px;padding:6px 9px;font-size:13px;">&#128465;</button>
-        <select style="flex:1;min-width:90px;"><option>AGÊNCIA</option></select>
+      <label>Visão</label>
+      <select id="viewSelect">
+        <option value="group:varejo">Agência Varejo (consolidado)</option>
+        <option value="group:prime">Agência Prime (consolidado)</option>
+      </select>
+    </div>
+    <div class="field" style="flex:2;min-width:260px;">
+      <label>Gerente</label>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <select id="gerenteSelect" style="flex:1;"></select>
+        <button id="addManagerBtn" class="icon-btn" title="Adicionar gerente">&#10133;</button>
+        <button id="renameManagerBtn" class="icon-btn" title="Renomear gerente">&#9998;</button>
+        <button id="deleteManagerBtn" class="icon-btn" title="Excluir gerente">&#128465;</button>
       </div>
     </div>
-
-    <div class="field"><label>Período</label>
-      <select><option>Julho/2026</option></select></div>
-    <div class="field"><label>Resultado</label>
-      <select><option>Mensal</option></select></div>
-    <div class="field"><label>% Atingido</label>
-      <select><option>Mensal</option></select></div>
+    <div class="field">
+      <label>Filtrar por % Atingido</label>
+      <select id="atgFilter">
+        <option value="todos">Todos os indicadores</option>
+        <option value="zerados">Zerados (0%)</option>
+        <option value="abaixo70">Abaixo de 70%</option>
+        <option value="entre70e90">Entre 70% e 89,99%</option>
+        <option value="acima100">Acima de 100%</option>
+      </select>
+    </div>
   </div>
 
   <div class="titleband">
     <div>
       <div class="t1">INDICADORES PRIORITÁRIOS DO POBJ</div>
-      <div class="t2" id="titlebandSubtitle">1408-VJ-AV.P.ANT.CARLOS-UBH</div>
+      <div class="t2" id="titlebandSubtitle">Agência Varejo (consolidado)</div>
     </div>
     <div class="right">
-      <div class="big">MENSAL - JULHO/2026</div>
-      <div class="small">Base 07/07/2026</div>
+      <div class="big" id="titlebandGroupTag">GRUPO VAREJO</div>
     </div>
   </div>
 
   <div class="summary-wrap">
     <div class="card">
-      <div class="card-head indic">
-        <div>INDICADORES</div><div>total</div><div>atingidos</div><div>IDB</div>
-      </div>
-      <div class="card-body indic">
-        <div></div>
-        <div id="sumIndicTotal"></div>
-        <div id="sumIndicAtingidos"></div>
-        <div id="sumIdb"></div>
-      </div>
+      <div class="card-head"><div>INDICADORES</div><div>total</div><div>atingidos</div><div>IDB</div></div>
+      <div class="card-body"><div></div><div id="sumIndicTotal"></div><div id="sumIndicAtingidos"></div><div id="sumIdb"></div></div>
       <div class="bar-track"><span class="seg-red" id="indicBarFill" style="width:0%"></span><span class="seg-empty" id="indicBarEmpty" style="width:100%"></span></div>
     </div>
-
     <div class="card">
-      <div class="card-head pontos">
-        <div>PONTOS</div><div>possíveis</div><div>atingidos</div><div>% ating.</div>
-      </div>
-      <div class="card-body pontos">
-        <div></div>
-        <div id="sumPontosPossiveis"></div>
-        <div id="sumPontosAtingidos"></div>
-        <div id="sumPctAting"></div>
-      </div>
-      <div class="bar-track">
-        <span class="seg-red" id="pontosBarRed" style="width:0%"></span>
-        <span class="seg-empty" id="pontosBarEmpty" style="width:100%"></span>
-      </div>
+      <div class="card-head"><div>PONTOS</div><div>possíveis</div><div>atingidos</div><div>% ating.</div></div>
+      <div class="card-body"><div></div><div id="sumPontosPossiveis"></div><div id="sumPontosAtingidos"></div><div id="sumPctAting"></div></div>
+      <div class="bar-track"><span class="seg-red" id="pontosBarRed" style="width:0%"></span><span class="seg-empty" id="pontosBarEmpty" style="width:100%"></span></div>
     </div>
   </div>
 
-  <div class="paste-panel">
-    <div class="paste-head">&#128202; Comparar indicadores entre Agência e Gerentes</div>
-    <div class="indicator-multiselect">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="indicatorMultiToggle" class="pill dark" type="button" style="cursor:pointer;">Selecionar indicadores &#9662;</button>
-        <button id="indicatorClearBtn" class="pill dark" type="button" title="Limpar seleção" style="cursor:pointer;background:linear-gradient(180deg,#8a2f2f,#5a1a1a);">&#128465; Limpar seleção</button>
-      </div>
-      <div id="indicatorCheckboxList" class="indicator-checklist" style="display:none;"></div>
-    </div>
-    <div id="indicatorCompareResult"></div>
-    <button id="printReportBtn" class="pill purple print-report-btn" type="button" style="cursor:pointer;">&#128424; Imprimir relatório</button>
-  </div>
-
-  <div class="paste-panel">
-    <div class="paste-head">&#128196; Atualizar indicadores (importar PDF exportado do portal)</div>
-    <label for="pdfFileInput" class="pill purple" style="cursor:pointer;display:inline-block;">&#128194; Escolher arquivo PDF</label>
-    <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
-    <div class="paste-actions" style="margin-top:14px;">
+  <div class="panel" id="manageIndicatorsPanel">
+    <div class="panel-head">&#128204; Indicadores rastreados deste gerente</div>
+    <div class="panel-actions">
+      <button id="addIndicatorBtn" class="pill purple" style="cursor:pointer;">&#10133; Adicionar indicador</button>
       <button id="saveNowBtn" class="pill dark" style="cursor:pointer;">&#128190; Salvar estado atual</button>
       <button id="toggleHistoryBtn" class="pill dark" style="cursor:pointer;">&#128220; Histórico</button>
-      <span id="pdfStatus"></span>
     </div>
     <div id="fbStatus" class="fb-status">Conectando ao Firebase...</div>
   </div>
 
-  <div id="historyBanner" class="history-banner" style="display:none;">
+  <div class="panel" id="pdfPanel">
+    <div class="panel-head">&#128196; Atualizar valores (importar PDF exportado do portal)</div>
+    <label for="pdfFileInput" class="pill purple" style="cursor:pointer;display:inline-block;">&#128194; Escolher arquivo PDF</label>
+    <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none;">
+    <span id="pdfStatus" class="status-text" style="margin-left:10px;"></span>
+    <div id="pdfSuggestions" class="suggestions-box" style="display:none;"></div>
+
+    <div style="margin-top:16px;padding-top:14px;border-top:1px dashed #ddd;">
+      <div class="panel-head" style="margin-bottom:8px;">&#128203; Ou cole o HTML da tabela copiado do portal (Console/DevTools)</div>
+      <textarea id="htmlPasteArea" placeholder="Cole aqui o HTML copiado (ex.: via copy(t.outerHTML) no Console do navegador)..." style="width:100%;min-height:100px;border:1px solid #c9c9c9;border-radius:4px;padding:8px 10px;font-family:'Courier New',monospace;font-size:11.5px;resize:vertical;"></textarea>
+      <div style="margin-top:8px;">
+        <button id="applyHtmlPasteBtn" class="pill purple" style="cursor:pointer;">Atualizar a partir do HTML colado</button>
+        <span id="htmlPasteStatus" class="status-text"></span>
+      </div>
+      <div id="htmlPasteSuggestions" class="suggestions-box" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="historyBanner" class="panel" style="display:none;background:#fff3d6;border:1px solid #e8c46b;">
     <span id="historyBannerText"></span>
-    <button id="backToCurrentBtn" class="pill purple">Voltar ao estado atual</button>
+    <button id="backToCurrentBtn" class="pill purple" style="margin-left:14px;cursor:pointer;">Voltar ao estado atual</button>
   </div>
 
-  <div class="history-panel" id="historyPanelWrap" style="display:none;">
-    <div class="paste-head">&#128220; Histórico de atualizações</div>
-    <div id="historyList" class="hist-list"><div class="hist-empty">Carregando...</div></div>
+  <div class="panel" id="historyPanelWrap" style="display:none;">
+    <div class="panel-head">&#128220; Histórico de atualizações</div>
+    <div id="historyList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;"></div>
   </div>
 
-  <div id="sections"></div>
+  <div class="indicators-panel">
+    <div class="indicators-head">
+      <span class="name" id="indicatorsSectionName">Indicadores</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>PRODUTO</th><th>PESO</th><th>META</th><th>REALIZADO</th><th>% ATG.</th>
+            <th>DEFASAGEM</th><th>PTS</th><th>AÇÃO</th>
+          </tr>
+        </thead>
+        <tbody id="indicatorsBody"></tbody>
+      </table>
+    </div>
+  </div>
 
+  <div class="panel">
+    <div class="panel-head">&#128202; Comparar indicadores entre Agências e Gerentes</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="indicatorMultiToggle" class="pill dark" type="button" style="cursor:pointer;">Selecionar indicadores &#9662;</button>
+      <button id="indicatorClearBtn" class="pill red" type="button" style="cursor:pointer;">&#128465; Limpar seleção</button>
+    </div>
+    <div id="indicatorCheckboxList" class="indicator-checklist" style="display:none;"></div>
+    <div id="indicatorCompareResult"></div>
+    <button id="printReportBtn" class="pill purple" type="button" style="cursor:pointer;margin-top:10px;">&#128424; Imprimir relatório</button>
+  </div>
 
   <div class="legend">
     <b>Legendas</b>
@@ -689,119 +258,9 @@
     <div class="item"><span class="swatch ic-nc">&mdash;</span> Não calculado</div>
   </div>
 
-  <footer>Bradesco Varejo — Sistema de Informações/Tecnologia</footer>
+  <footer>Bradesco Varejo — Painel próprio de acompanhamento (dados de responsabilidade do usuário)</footer>
 
 <script>
-// ---- Data model: each section has rows; rows may be parent (collapsible) or child ----
-// col order: [peso, metrica, dtbase, meta, realizado, atg, ref, projfinal, necdia, pts, icon]
-// icon codes: ok, warn, q, bad, low, nc, "" (none)
-
-const sections = [
-  {
-    name:"CLIENTES", weight:"3,0", btn:null, btnClass:"purple", total:"0,00",
-    rows:[
-      row("Crescimento Líquido Gerenciado PF","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Crescimento Líquido Clientes PJ","3,0","QTD","","8,00","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conquista Qualificada Gerenciado PF","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conquista e Reativação Qualificada PJ","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conversão de INSS","0,0","QTD","","4,00","","0,00","0,00","0,00","0,00","0,00","", true),
-    ]
-  },
-  {
-    name:"NEGÓCIOS CAPTAÇÃO", weight:"14,0", btn:null, btnClass:"purple", total:"0,00",
-    rows:[
-      row("Captação Líquida PF (Investimentos)","5,0","PROD","","92.477,93","","0,00","0,00","0,00","0,00","0,00",""),
-      row("InvestFácil - PF","3,0","PROD","","3.235,13","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Captação Líquida PJ (Todos os Produtos)","3,0","PROD","","300.257,88","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Centralidade PF","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Centralização de Caixa PJ (Cash)","6,0","PROD","","49.471.738,02","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Uso de Cartão PF - Mês","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"NEGÓCIOS CRÉDITO", weight:"5,0", btn:null, btnClass:"purple", total:"0,00",
-    rows:[
-      row("Produção de Crédito &gt; Spread PF","5,0","PROD","06/07/2026","98.475,40","8.824,48","8,96","17,00","51,53","4.718,47","0,00","bad"),
-      row("Utilização média de limites","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Utilização média de limites","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Produção de Crédito &lt; Spread PF","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Produção de Crédito PJ (Todos os Produtos)","0,0","PROD","06/07/2026","","52.693,10","0,00","0,00","0,00","0,00","0,00",""),
-      row("Rentabilidade de Crédito - Spread PF","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Rentabilidade de Crédito - Spread PJ","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Total Crédito","0,0","PROD","03/07/2026","","61.517,58","0,00","0,00","0,00","0,00","0,00","", true),
-      row("Cheque Especial - qtd","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","", true),
-      row("Cheque Especial - vol","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","", true),
-    ]
-  },
-  {
-    name:"GESTÃO DE RISCO", weight:"4,0", btn:null, btnClass:"purple", total:"0,00",
-    rows:[
-      row("Prevenção a Vencidos","4,0","PROD","","1.006.330,84","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Vencidos Até 59 dias","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Vencidos Acima de 59 dias","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Recuperação de LP - Total","0,0","PROD","03/07/2026","","90,20","0,00","0,00","0,00","0,00","0,00",""),
-      row("Recuperação de LP - À Vista + Entrada","0,0","PROD","03/07/2026","","90,20","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"PRODUTIVIDADE DA EQUIPE", weight:"0,0", btn:"PRODUTIVIDADE", btnClass:"dark", total:"0,00",
-    rows:[
-      row("Sucesso de Equipe - Crédito","0,0","PERC","06/07/2026","0,00","","0,00","","0,00","","","nc"),
-    ]
-  },
-  {
-    name:"QUALIDADE", weight:"10,0", btn:"QUALIDADE", btnClass:"purple", total:"15,00",
-    rows:[
-      row("Encanta BRA","10,0","PONT","07/07/2026","144,00","150,00","104,17","150,00","150,00","0,00","15,00","ok"),
-    ]
-  },
-  {
-    name:"LIGADAS E ACELERADORES", weight:"28,0", btn:"ACELERADORES", btnClass:"purple", total:"8,15",
-    rows:[
-      row("Cartões (Academia de Astros)","7,0","PERC","","100,00","","0,00","0,00","0,00","0,00","0,00","",false,true,"cartoes"),
-      row("Cartão de Crédito Emissão Classic","0,0","QTD","","22,10","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Cartão de Crédito Emissão PF","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Cartão de Crédito Emissão PJ Negócios","0,0","QTD","","10,00","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Faturamento Cartão de Crédito PJ Negócios","0,0","PROD","","26.040,72","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Cartão Consignado - Saque Parcelado","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Faturamento Cartão de Crédito PF","0,0","PROD","07/07/2026","","623,36","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Faturamento Novo Alelo","0,0","PROD","","1.804,90","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-      row("Faturamento Cielo Novo","0,0","PROD","","73.819,23","","0,00","0,00","0,00","0,00","0,00","",true,false,"cartoes"),
-
-      row("Consórcio (Expert)","6,0","PERC","","100,00","","0,00","0,00","0,00","0,00","0,00","",false,true,"consorcio"),
-      row("Consórcios - Total","0,0","PROD","","489.729,56","","0,00","0,00","0,00","0,00","0,00","",true,false,"consorcio"),
-      row("Consórcios Pesados e Imóveis","0,0","PROD","","220.378,30","","0,00","0,00","0,00","0,00","0,00","",true,false,"consorcio"),
-      row("Consórcios Auto","0,0","PROD","","269.351,26","","0,00","0,00","0,00","0,00","0,00","",true,false,"consorcio"),
-
-      row("Seguros (Olimpíada de Produção)","10,0","PERC","03/07/2026","100,00","81,54","81,54","0,00","81,54","81,54","8,15","q",false,true,"seguros"),
-      row("Seguro de Vida (PU + PM)","14,0","PROD","","19.369,03","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Seguro de Vida PM","3,0","PROD","","271,17","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Vida Carteira","0,0","PROD","03/07/2026","","745,86","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Capitalização (PU + PM)","14,0","PROD","06/07/2026","135.827,37","31.163,96","22,94","17,00","131,93","5.508,60","18,47","ok",true,false,"seguros"),
-      row("Capitalização PM","3,0","PROD","03/07/2026","2.444,89","100,00","4,09","13,00","31,36","117,24","0,00","",true,false,"seguros"),
-      row("Previdência Privada - Venda Bruta (PU + PM)","14,0","PROD","03/07/2026","32.201,37","13.000,00","40,37","13,00","309,51","960,07","21,00","ok",true,false,"seguros"),
-      row("Previdência Privada - Venda Bruta PM","3,0","PROD","","96,60","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Dental PF","6,0","PROD","","468,92","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Saúde / Dental PJ","6,0","PROD","","1.282,84","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Seguro Prestamista Volume (Prêmio)","11,0","PROD","03/07/2026","471,36","3.843,66","815,44","13,00","6.251,71","0,00","16,50","ok",true,false,"seguros"),
-      row("Seguro Auto","6,0","PROD","06/07/2026","16.375,63","2.168,29","13,24","17,00","76,14","747,75","4,57","q",true,false,"seguros"),
-      row("Seguro RE (sem residencial)","6,0","PROD","","5.226,36","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Seguro Residencial","14,0","PROD","06/07/2026","2.613,36","896,59","34,31","17,00","197,27","90,36","21,00","ok",true,false,"seguros"),
-      row("Conquista de Clientes - Folha de Pagamento","3,0","QTD","","14,00","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Portabilidade de Previdência","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"seguros"),
-      row("Open Finance PJ","2,0","QTD","06/07/2026","10,00","1,00","10,00","17,00","57,50","0,47","0,00","bad",true,false,"seguros"),
-    ]
-  },
-];
-
-function row(name,peso,metrica,dtbase,meta,realizado,atg,ref,projfinal,necdia,pts,icon,isChild,isParent,group){
-  return {name,peso,metrica,dtbase,meta,realizado,atg,ref,projfinal,necdia,pts,icon,isChild:!!isChild,isParent:!!isParent,group:group||null};
-}
-
-// ---- Regra de pontuação ----
-// < 70% atingido            -> 0 pontos
-// 70% a 89,99% atingido     -> % atingido aplicado sobre 50% do peso
-// >= 90% atingido           -> % atingido (limitado a 150%) aplicado sobre 100% do peso
 function parseBR(str){
   if(str === undefined || str === null || str === '') return NaN;
   const n = parseFloat(String(str).replace(/\./g,'').replace(',', '.'));
@@ -810,398 +269,12 @@ function parseBR(str){
 function formatBR(n){
   return n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
-function iconForAtg(atg){
-  if(isNaN(atg)) return 'nc';
-  if(atg >= 100) return 'ok';
-  if(atg >= 90) return 'warn';
-  if(atg >= 70) return 'q';
-  if(atg >= 50) return 'bad';
-  return 'low';
-}
-
-// Recalcula % Atg. automaticamente quando Meta ou Realizado são editados
-function recomputeAtg(r){
-  const meta = parseBR(r.meta);
-  const realizado = parseBR(r.realizado);
-  if(!isNaN(meta) && meta !== 0 && !isNaN(realizado)){
-    const pct = (realizado / meta) * 100;
-    r.atg = formatBR(pct);
-  }
-}
-
-// Defasagem = Realizado - Meta. Negativa (déficit) em vermelho; positiva/zero na cor padrão.
-function calcDefasagem(r){
-  const meta = parseBR(r.meta);
-  const realizado = parseBR(r.realizado);
-  if(isNaN(meta) || isNaN(realizado)){
-    return { text:'', negative:false };
-  }
-  const diff = realizado - meta;
-  return { text: formatBR(diff), negative: diff < 0 };
-}
-
-// Normaliza qualquer número digitado/colado para o formato X.xxx,xx
-// (usado em Meta, Realizado e Defasagem). Mantém vazio/texto não numérico como está.
 function formatNumberDisplay(str){
   if(str === undefined || str === null || str === '') return '';
   const n = parseBR(str);
   if(isNaN(n)) return str;
   return formatBR(n);
 }
-function calcPontos(r){
-  // mantém override manual "não calculado" quando definido explicitamente
-  if(r.icon === 'nc'){
-    return { pts:'', icon:'nc' };
-  }
-  const atg = parseBR(r.atg);
-  const peso = parseBR(r.peso);
-  if(isNaN(atg) || isNaN(peso)){
-    return { pts:'0,00', icon:'low' };
-  }
-  let pts;
-  if(atg < 70){
-    pts = 0;
-  } else if(atg < 90){
-    pts = peso * 0.5 * (atg/100);
-  } else {
-    const capped = Math.min(atg, 150);
-    pts = peso * (capped/100);
-  }
-  return { pts: formatBR(pts), icon: iconForAtg(atg) };
-}
-
-const iconMap = {
-  ok:  '<span class="icon-cell ic-ok">&#10003;</span>',
-  warn:'<span class="icon-cell ic-warn">&#9888;</span>',
-  q:   '<span class="icon-cell ic-q">?</span>',
-  bad: '<span class="icon-cell ic-bad">&#10007;</span>',
-  low: '<span class="icon-cell ic-low">&#8600;</span>',
-  nc:  '<span class="icon-cell ic-nc">&mdash;</span>',
-  '':  '<span class="icon-cell ic-low">&#8600;</span>'
-};
-
-const container = document.getElementById('sections');
-const hiddenKeys = new Set(); // chaves "sIdx-i" ocultadas manualmente (visão Agência)
-let currentFilter = 'todos'; // filtro de % atingido (compartilhado pela visão ativa)
-
-// gerentes de relacionamento
-let managers = [];
-const managerHiddenKeys = new Map(); // managerId -> Set de chaves ocultadas
-
-// estado da visão ativa: 'agency' (Consolidado) ou 'manager'
-let activeScope = 'agency';
-let activeManagerId = null;
-
-// resumo (cards INDICADORES/PONTOS) da Agência — agora editável, igual ao dos gerentes
-let agencySummary = {
-  indicTotal:'12', indicAtingidos:'1', idb:'8,33',
-  pontosPossiveis:'36,00', pontosAtingidos:'15,00', pctAting:'41,67', acelera:'8,15', pctFinal:'49,82'
-};
-
-function matchesAtgFilterVal(atgStr, filterVal){
-  if(filterVal === 'todos') return true;
-  const atg = parseBR(atgStr);
-  if(isNaN(atg)) return false;
-  switch(filterVal){
-    case 'zerados':    return atg === 0;
-    case 'abaixo70':   return atg < 70;
-    case 'entre70e90': return atg >= 70 && atg < 90;
-    case 'acima100':   return atg >= 100;
-    default: return true;
-  }
-}
-
-function currentManager(){
-  return managers.find(m => m.id === activeManagerId) || null;
-}
-
-function getActiveSectionsArr(){
-  if(activeScope === 'manager'){
-    const mgr = currentManager();
-    return mgr ? mgr.sections : [];
-  }
-  return sections;
-}
-
-function getActiveHiddenSet(){
-  if(activeScope === 'manager'){
-    if(!managerHiddenKeys.has(activeManagerId)) managerHiddenKeys.set(activeManagerId, new Set());
-    return managerHiddenKeys.get(activeManagerId);
-  }
-  return hiddenKeys;
-}
-
-function getActiveSummary(){
-  if(activeScope === 'manager'){
-    const mgr = currentManager();
-    return mgr ? mgr.summary : {};
-  }
-  return agencySummary;
-}
-
-function getActivePrefix(){
-  return activeScope === 'manager' ? ('mg-' + activeManagerId) : 'ag';
-}
-
-function saveActiveSnapshot(reason){
-  if(activeScope === 'manager'){
-    if(activeManagerId) saveManagerSnapshot(activeManagerId, reason);
-  } else {
-    saveSnapshot(reason);
-  }
-}
-
-// Constrói as seções (tabelas) dentro de containerEl — usada tanto para a
-// Agência quanto para o gerente selecionado, de acordo com o estado ativo.
-function buildSectionsView(containerEl, sectionsArr, opts){
-  containerEl.innerHTML = '';
-
-  sectionsArr.forEach((sec, sIdx) => {
-    const secEl = document.createElement('div');
-    secEl.className = 'section';
-
-    // total da seção = soma da pontuação (PTS) de cada indicador da família
-    let sectionTotalPts = 0;
-    sec.rows.forEach(r => {
-      const n = parseBR(calcPontos(r).pts);
-      if(!isNaN(n)) sectionTotalPts += n;
-    });
-
-    const head = document.createElement('div');
-    head.className = 'section-head';
-    head.innerHTML = `
-      <div class="left">
-        <span class="name">${sec.name}</span>
-      </div>
-      <div class="left">
-        <span class="total">${formatBR(sectionTotalPts)}</span>
-        <span class="caret" data-caret="${opts.prefix}-${sIdx}">&#9660;</span>
-      </div>
-    `;
-    secEl.appendChild(head);
-
-    const scrollWrap = document.createElement('div');
-    scrollWrap.className = 'table-scroll';
-    scrollWrap.id = `tablewrap-${opts.prefix}-${sIdx}`;
-
-    let bodyRows = '';
-    sec.rows.forEach((r,i) => {
-      const groupKey = r.group ? `${opts.prefix}-${r.group}` : '';
-      const groupAttr = r.group ? `data-group="${groupKey}"` : '';
-      const parentAttr = r.isParent ? `data-parent="${groupKey}"` : '';
-      const key = `${sIdx}-${i}`;
-      const isHidden = opts.hiddenSet.has(key);
-      const filterHide = !matchesAtgFilterVal(r.atg, opts.filterVal);
-      const cls = [
-        r.isChild ? 'child' : (r.isParent ? 'parent-row' : ''),
-        isHidden ? 'row-hidden' : '',
-        filterHide ? 'filter-hide' : ''
-      ].filter(Boolean).join(' ');
-      const caret = r.isParent ? `<span class="toggle-caret" data-toggle="${groupKey}">&#9660;</span>` : '';
-      const rowId = `row-${opts.prefix}-${sIdx}-${i}`;
-      const calc = calcPontos(r);
-      const defa = calcDefasagem(r);
-      bodyRows += `<tr class="${cls}" ${groupAttr} ${parentAttr} id="${rowId}" data-key="${key}">
-        <td class="name-cell">${caret}${r.name}</td>
-        <td class="editable-cell" contenteditable="true" data-field="peso" data-skey="${sIdx}" data-ridx="${i}" title="Clique para editar">${r.peso}</td>
-        <td class="editable-cell" contenteditable="true" data-field="meta" data-skey="${sIdx}" data-ridx="${i}" title="Clique para editar">${formatNumberDisplay(r.meta)}</td>
-        <td class="editable-cell" contenteditable="true" data-field="realizado" data-skey="${sIdx}" data-ridx="${i}" title="Clique para editar">${formatNumberDisplay(r.realizado)}</td>
-        <td>${r.atg}</td>
-        <td class="${defa.negative ? 'ic-bad' : ''}">${defa.text}</td>
-        <td>${iconMap[calc.icon] || ''} ${calc.pts}</td>
-        <td class="action-cell"><button class="eye-btn" data-row="${rowId}" data-key="${key}" title="Ocultar/Exibir indicador">${isHidden ? '&#128065; Exibir' : '&#128065; Ocultar'}</button></td>
-      </tr>`;
-    });
-
-    const noneMatchFilter = opts.filterVal !== 'todos' && !sec.rows.some(r => matchesAtgFilterVal(r.atg, opts.filterVal));
-    if(noneMatchFilter){
-      bodyRows += `<tr><td colspan="8" style="text-align:center;color:#888;font-style:italic;padding:14px;">Nenhum indicador desta seção está na faixa selecionada.</td></tr>`;
-    }
-
-    scrollWrap.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>PRODUTO</th><th>PESO</th><th>META</th>
-            <th>REALIZADO</th><th>% ATG.</th><th>DEFASAGEM</th><th>PTS</th><th>AÇÃO</th>
-          </tr>
-        </thead>
-        <tbody>${bodyRows}</tbody>
-      </table>
-    `;
-    secEl.appendChild(scrollWrap);
-    containerEl.appendChild(secEl);
-
-    // collapse whole section
-    head.addEventListener('click', (e) => {
-      if(e.target.closest('.btn')) return;
-      scrollWrap.style.display = scrollWrap.style.display === 'none' ? '' : 'none';
-      const caretEl = head.querySelector('.caret');
-      caretEl.innerHTML = scrollWrap.style.display === 'none' ? '&#9654;' : '&#9660;';
-    });
-  });
-}
-
-// Calcula o resumo dos cards INDICADORES/PONTOS a partir dos indicadores
-// da visão ativa (só considera indicadores com peso definido, > 0):
-//   INDICADORES: total = qtd. com peso definido; atingidos = qtd. com % Atg. >= 100%;
-//                IDB = atingidos / total (%)
-//   PONTOS: possíveis = soma dos pesos; atingidos = soma da pontuação (PTS) já obtida;
-//           % ating. = atingidos / possíveis (%)
-function calcResumoFromSections(sectionsArr){
-  let total = 0, atingidos = 0, pesoPossivel = 0, pesoAtingido = 0;
-
-  getAllRowsFrom(sectionsArr).forEach(r => {
-    const peso = parseBR(r.peso);
-    if(isNaN(peso) || peso <= 0) return; // só conta indicadores com peso definido
-
-    total++;
-    pesoPossivel += peso;
-
-    const atg = parseBR(r.atg);
-    if(!isNaN(atg) && atg >= 100) atingidos++;
-
-    const ptsNum = parseBR(calcPontos(r).pts);
-    if(!isNaN(ptsNum)) pesoAtingido += ptsNum;
-  });
-
-  const idb = total > 0 ? (atingidos / total) * 100 : 0;
-  const pctAting = pesoPossivel > 0 ? (pesoAtingido / pesoPossivel) * 100 : 0;
-
-  return { total, atingidos, idb, pesoPossivel, pesoAtingido, pctAting };
-}
-
-function renderSummaryCards(sectionsArr){
-  const r = calcResumoFromSections(sectionsArr);
-
-  document.getElementById('sumIndicTotal').textContent = r.total;
-  document.getElementById('sumIndicAtingidos').textContent = r.atingidos;
-  document.getElementById('sumIdb').textContent = formatBR(r.idb);
-  document.getElementById('sumPontosPossiveis').textContent = formatBR(r.pesoPossivel);
-  document.getElementById('sumPontosAtingidos').textContent = formatBR(r.pesoAtingido);
-  document.getElementById('sumPctAting').textContent = formatBR(r.pctAting);
-
-  const idbClamped = Math.max(0, Math.min(100, r.idb));
-  document.getElementById('indicBarFill').style.width = idbClamped + '%';
-  document.getElementById('indicBarEmpty').style.width = (100 - idbClamped) + '%';
-
-  const pctClamped = Math.max(0, Math.min(100, r.pctAting));
-  document.getElementById('pontosBarRed').style.width = pctClamped + '%';
-  document.getElementById('pontosBarEmpty').style.width = (100 - pctClamped) + '%';
-}
-
-// Renderiza a visão ativa (Agência ou o gerente selecionado) usando o MESMO
-// conjunto de elementos da página — título, cards de resumo e tabelas.
-function renderCurrentView(){
-  const subtitleEl = document.getElementById('titlebandSubtitle');
-  if(activeScope === 'manager'){
-    const mgr = currentManager();
-    subtitleEl.textContent = mgr ? mgr.name : '—';
-  } else {
-    subtitleEl.textContent = '1408-VJ-AV.P.ANT.CARLOS-UBH';
-  }
-
-  renderSummaryCards(getActiveSectionsArr());
-
-  buildSectionsView(container, getActiveSectionsArr(), {
-    prefix: getActivePrefix(),
-    hiddenSet: getActiveHiddenSet(),
-    filterVal: currentFilter,
-  });
-  updateHiddenCount();
-}
-
-// mantém compatibilidade com o restante do código
-function renderAll(){ renderCurrentView(); }
-
-function updateHiddenCount(){
-  document.getElementById('hiddenCount').textContent = getActiveHiddenSet().size;
-}
-
-// mostrar/ocultar indicador individual (sempre na visão ativa)
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.eye-btn');
-  if(!btn) return;
-  e.stopPropagation();
-  const rowEl = document.getElementById(btn.getAttribute('data-row'));
-  const key = btn.getAttribute('data-key');
-  if(!rowEl) return;
-  const hset = getActiveHiddenSet();
-  const nowHidden = rowEl.classList.toggle('row-hidden');
-  if(nowHidden) hset.add(key); else hset.delete(key);
-  btn.innerHTML = nowHidden ? '&#128065; Exibir' : '&#128065; Ocultar';
-  updateHiddenCount();
-});
-
-// filtro de % atingido (aplica-se à visão ativa)
-document.getElementById('atgFilter').addEventListener('change', (e) => {
-  currentFilter = e.target.value;
-  renderCurrentView();
-});
-
-// edição "clicar e digitar" nas células de Peso, Meta, Realizado (e resumo)
-document.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && e.target.closest && e.target.closest('.editable-cell')){
-    e.preventDefault();
-    e.target.blur();
-  }
-});
-
-document.addEventListener('focusout', (e) => {
-  const cell = e.target.closest && e.target.closest('.editable-cell[data-field]');
-  if(!cell) return;
-  const sIdx = parseInt(cell.getAttribute('data-skey'), 10);
-  const rIdx = parseInt(cell.getAttribute('data-ridx'), 10);
-  const arr = getActiveSectionsArr();
-  const sec = arr[sIdx];
-  const r = sec ? sec.rows[rIdx] : null;
-  if(!r) return;
-
-  const field = cell.getAttribute('data-field');
-  let newVal = cell.textContent.trim();
-  if(field === 'meta' || field === 'realizado'){
-    newVal = formatNumberDisplay(newVal);
-  }
-  if(newVal === r[field]) return; // nada mudou, não precisa salvar
-
-  r[field] = newVal;
-  if(field === 'meta' || field === 'realizado'){
-    recomputeAtg(r);
-  }
-  renderCurrentView();
-  saveActiveSnapshot(`Edição manual — ${r.name} (${field})`);
-  refreshIndicatorCompareIfOpen();
-});
-
-// botão do topo: entra/sai do modo de revisão de itens ocultos
-const revealBtn = document.getElementById('revealBtn');
-revealBtn.addEventListener('click', () => {
-  document.body.classList.toggle('reveal-hidden');
-  const active = document.body.classList.contains('reveal-hidden');
-  revealBtn.style.background = active
-    ? 'linear-gradient(180deg,#c94f6b,#a3123a)'
-    : 'linear-gradient(180deg,#7a3570,#5a2153)';
-});
-
-// collapse/expand child groups (Cartões / Consórcio / Seguros)
-document.addEventListener('click', (e) => {
-  const t = e.target.closest('.toggle-caret');
-  if(!t) return;
-  e.stopPropagation();
-  const group = t.getAttribute('data-toggle');
-  const rows = document.querySelectorAll(`tr[data-group="${group}"]:not([data-parent])`);
-  let collapsedNow = false;
-  rows.forEach(r => {
-    r.classList.toggle('collapsed');
-    collapsedNow = r.classList.contains('collapsed');
-  });
-  t.innerHTML = collapsedNow ? '&#9654;' : '&#9660;';
-});
-
-// =====================================================================
-// Colar dados copiados do portal de origem e localizar/atualizar
-// os indicadores por semelhança de nome
-// =====================================================================
 function normalizeName(s){
   return s.toString()
     .replace(/&gt;/g,'>').replace(/&lt;/g,'<').replace(/&amp;/g,'&')
@@ -1211,7 +284,6 @@ function normalizeName(s){
     .replace(/\s+/g,' ')
     .trim();
 }
-
 function nameSimilarity(a,b){
   if(!a || !b) return 0;
   if(a === b) return 1;
@@ -1224,117 +296,652 @@ function nameSimilarity(a,b){
   const bonus = (a.includes(b) || b.includes(a)) ? 0.15 : 0;
   return Math.min(1, base + bonus);
 }
-
-// =====================================================================
-// Comparativo de indicador entre Agência e Gerentes de Relacionamento
-// (lida com pequenas variações de escrita usando a mesma busca por
-// semelhança já usada na colagem de dados)
-// =====================================================================
-const INDICATOR_MATCH_THRESHOLD = 0.55;
-
-function getAllRowsFrom(sectionsArr){
-  const out = [];
-  (sectionsArr || []).forEach(sec => sec.rows.forEach(r => out.push(r)));
-  return out;
+function recomputeAtg(ind){
+  const meta = parseBR(ind.meta);
+  const realizado = parseBR(ind.realizado);
+  if(!isNaN(meta) && meta !== 0 && !isNaN(realizado)){
+    ind.atg = formatBR((realizado / meta) * 100);
+  }
+}
+function calcDefasagem(ind){
+  const meta = parseBR(ind.meta);
+  const realizado = parseBR(ind.realizado);
+  if(isNaN(meta) || isNaN(realizado)) return { text:'', negative:false };
+  const diff = realizado - meta;
+  return { text: formatBR(diff), negative: diff < 0 };
+}
+function iconForAtg(atg){
+  if(isNaN(atg)) return 'nc';
+  if(atg >= 100) return 'ok';
+  if(atg >= 90) return 'warn';
+  if(atg >= 70) return 'q';
+  if(atg >= 50) return 'bad';
+  return 'low';
+}
+function calcPontos(ind){
+  const atg = parseBR(ind.atg);
+  const peso = parseBR(ind.peso);
+  if(isNaN(atg) || isNaN(peso)) return { pts:'0,00', icon:'low' };
+  let pts;
+  if(atg < 70) pts = 0;
+  else if(atg < 90) pts = peso * 0.5 * (atg/100);
+  else pts = peso * (Math.min(atg,150)/100);
+  return { pts: formatBR(pts), icon: iconForAtg(atg) };
+}
+const iconMap = {
+  ok:'<span class="icon-cell ic-ok">&#10003;</span>',
+  warn:'<span class="icon-cell ic-warn">&#9888;</span>',
+  q:'<span class="icon-cell ic-q">?</span>',
+  bad:'<span class="icon-cell ic-bad">&#10007;</span>',
+  low:'<span class="icon-cell ic-low">&#8600;</span>',
+  nc:'<span class="icon-cell ic-nc">&mdash;</span>',
+};
+function matchesAtgFilterVal(atgStr, filterVal){
+  if(filterVal === 'todos') return true;
+  const atg = parseBR(atgStr);
+  if(isNaN(atg)) return false;
+  switch(filterVal){
+    case 'zerados': return atg === 0;
+    case 'abaixo70': return atg < 70;
+    case 'entre70e90': return atg >= 70 && atg < 90;
+    case 'acima100': return atg >= 100;
+    default: return true;
+  }
 }
 
-function findBestRowMatch(targetName, rowsArr){
-  const targetNorm = normalizeName(targetName);
-  let best = null, bestScore = 0;
-  rowsArr.forEach(r => {
-    const score = nameSimilarity(targetNorm, normalizeName(r.name));
-    if(score > bestScore){ bestScore = score; best = r; }
+// managers: [{ id, name, group:'varejo'|'prime', indicators:[{name,peso,meta,realizado,atg}] }]
+let managers = [];
+const managerHiddenKeys = new Map();
+const groupHiddenKeys = new Map();
+let currentFilter = 'todos';
+let activeSelection = { type:'group', groupId:'varejo' };
+
+function currentManager(){
+  if(activeSelection.type !== 'manager') return null;
+  return managers.find(m => m.id === activeSelection.managerId) || null;
+}
+
+function computeGroupIndicators(groupId){
+  const groupManagers = managers.filter(m => m.group === groupId);
+  const entries = [];
+  groupManagers.forEach(mgr => {
+    mgr.indicators.forEach(ind => {
+      const nNorm = normalizeName(ind.name);
+      let entry = entries.find(e => nameSimilarity(normalizeName(e.name), nNorm) >= 0.6);
+      if(!entry){ entry = { name: ind.name, peso:0, meta:0, realizado:0 }; entries.push(entry); }
+      const peso = parseBR(ind.peso); if(!isNaN(peso)) entry.peso += peso;
+      const meta = parseBR(ind.meta); if(!isNaN(meta)) entry.meta += meta;
+      const realizado = parseBR(ind.realizado); if(!isNaN(realizado)) entry.realizado += realizado;
+    });
   });
-  return bestScore >= INDICATOR_MATCH_THRESHOLD ? best : null;
+  return entries.map(e => {
+    const ind = { name: e.name, peso: formatBR(e.peso), meta: formatBR(e.meta), realizado: formatBR(e.realizado), atg: '0,00' };
+    recomputeAtg(ind);
+    return ind;
+  });
 }
 
-// Monta a lista de indicadores da Agência que têm correspondente em pelo
-// menos um gerente de relacionamento (com pequena tolerância de escrita).
-function buildIndicatorOptions(){
-  const agencyRows = getAllRowsFrom(sections);
-  const seen = new Set();
-  const result = [];
+function getActiveIndicators(){
+  if(activeSelection.type === 'manager'){
+    const mgr = currentManager();
+    return mgr ? mgr.indicators : [];
+  }
+  return computeGroupIndicators(activeSelection.groupId);
+}
 
-  agencyRows.forEach(r => {
-    const key = normalizeName(r.name);
-    if(seen.has(key)) return;
+function getActiveHiddenSet(){
+  if(activeSelection.type === 'manager'){
+    const id = activeSelection.managerId;
+    if(!managerHiddenKeys.has(id)) managerHiddenKeys.set(id, new Set());
+    return managerHiddenKeys.get(id);
+  }
+  const id = activeSelection.groupId;
+  if(!groupHiddenKeys.has(id)) groupHiddenKeys.set(id, new Set());
+  return groupHiddenKeys.get(id);
+}
+function isGroupView(){ return activeSelection.type === 'group'; }
 
-    const hasManagerMatch = managers.some(mgr =>
-      findBestRowMatch(r.name, getAllRowsFrom(mgr.sections)) !== null
-    );
-    if(hasManagerMatch){
-      seen.add(key);
-      result.push(r.name);
+function renderSummaryCards(indicators){
+  let total = 0, atingidos = 0, pesoPossivel = 0, pesoAtingido = 0;
+  indicators.forEach(ind => {
+    const peso = parseBR(ind.peso);
+    if(isNaN(peso) || peso <= 0) return;
+    total++;
+    pesoPossivel += peso;
+    const atg = parseBR(ind.atg);
+    if(!isNaN(atg) && atg >= 100) atingidos++;
+    const pts = parseBR(calcPontos(ind).pts);
+    if(!isNaN(pts)) pesoAtingido += pts;
+  });
+  const idb = total > 0 ? (atingidos/total)*100 : 0;
+  const pctAting = pesoPossivel > 0 ? (pesoAtingido/pesoPossivel)*100 : 0;
+  document.getElementById('sumIndicTotal').textContent = total;
+  document.getElementById('sumIndicAtingidos').textContent = atingidos;
+  document.getElementById('sumIdb').textContent = formatBR(idb);
+  document.getElementById('sumPontosPossiveis').textContent = formatBR(pesoPossivel);
+  document.getElementById('sumPontosAtingidos').textContent = formatBR(pesoAtingido);
+  document.getElementById('sumPctAting').textContent = formatBR(pctAting);
+  const idbClamped = Math.max(0, Math.min(100, idb));
+  document.getElementById('indicBarFill').style.width = idbClamped + '%';
+  document.getElementById('indicBarEmpty').style.width = (100-idbClamped) + '%';
+  const pctClamped = Math.max(0, Math.min(100, pctAting));
+  document.getElementById('pontosBarRed').style.width = pctClamped + '%';
+  document.getElementById('pontosBarEmpty').style.width = (100-pctClamped) + '%';
+}
+
+function renderIndicatorsTable(indicators){
+  const body = document.getElementById('indicatorsBody');
+  const hiddenSet = getActiveHiddenSet();
+  const groupView = isGroupView();
+  if(indicators.length === 0){
+    body.innerHTML = `<tr><td colspan="8" class="empty-msg">${groupView ? 'Nenhum gerente deste grupo possui indicadores rastreados ainda.' : 'Nenhum indicador rastreado ainda — clique em "Adicionar indicador".'}</td></tr>`;
+    return;
+  }
+  let html = '';
+  let anyVisible = false;
+  indicators.forEach((ind, i) => {
+    const key = String(i);
+    const isHidden = hiddenSet.has(key);
+    const filterHide = !matchesAtgFilterVal(ind.atg, currentFilter);
+    if(!isHidden && !filterHide) anyVisible = true;
+    const cls = [isHidden ? 'row-hidden' : '', filterHide ? 'filter-hide' : ''].filter(Boolean).join(' ');
+    const calc = calcPontos(ind);
+    const defa = calcDefasagem(ind);
+    const editableAttrs = groupView ? '' : 'contenteditable="true" class="editable-cell"';
+    html += `<tr class="${cls}" data-key="${key}">
+      <td>${ind.name}</td>
+      <td ${editableAttrs} data-field="peso" data-idx="${i}">${ind.peso}</td>
+      <td ${editableAttrs} data-field="meta" data-idx="${i}">${formatNumberDisplay(ind.meta)}</td>
+      <td ${editableAttrs} data-field="realizado" data-idx="${i}">${formatNumberDisplay(ind.realizado)}</td>
+      <td>${ind.atg || '—'}${ind.atg ? '%' : ''}</td>
+      <td class="${defa.negative ? 'ic-bad' : (defa.text ? 'ic-ok' : '')}">${defa.text || '—'}</td>
+      <td>${iconMap[calc.icon] || ''} ${calc.pts}</td>
+      <td>
+        <button class="icon-btn eye-btn" data-key="${key}" title="Ocultar/Exibir">${isHidden ? '&#128065; Exibir' : '&#128065; Ocultar'}</button>
+        ${groupView ? '' : `<button class="icon-btn del-indicator-btn" data-idx="${i}" title="Remover indicador" style="margin-left:4px;">&#128465;</button>`}
+      </td>
+    </tr>`;
+  });
+  if(!anyVisible && currentFilter !== 'todos'){
+    html += `<tr><td colspan="8" class="empty-msg">Nenhum indicador está na faixa de % selecionada.</td></tr>`;
+  }
+  body.innerHTML = html;
+}
+
+function renderCurrentView(){
+  const subtitleEl = document.getElementById('titlebandSubtitle');
+  const groupTagEl = document.getElementById('titlebandGroupTag');
+  const sectionNameEl = document.getElementById('indicatorsSectionName');
+  const manageIndicatorsPanel = document.getElementById('manageIndicatorsPanel');
+  const pdfPanel = document.getElementById('pdfPanel');
+
+  if(activeSelection.type === 'manager'){
+    const mgr = currentManager();
+    subtitleEl.textContent = mgr ? mgr.name : '—';
+    groupTagEl.textContent = mgr ? ('GRUPO ' + (mgr.group === 'varejo' ? 'VAREJO' : 'PRIME')) : '';
+    sectionNameEl.textContent = mgr ? mgr.name : 'Indicadores';
+    manageIndicatorsPanel.style.display = '';
+    pdfPanel.style.display = '';
+  } else {
+    const label = activeSelection.groupId === 'varejo' ? 'Agência Varejo (consolidado)' : 'Agência Prime (consolidado)';
+    subtitleEl.textContent = label;
+    groupTagEl.textContent = 'GRUPO ' + activeSelection.groupId.toUpperCase();
+    sectionNameEl.textContent = label;
+    manageIndicatorsPanel.style.display = 'none';
+    pdfPanel.style.display = 'none';
+  }
+
+  const indicators = getActiveIndicators();
+  renderSummaryCards(indicators);
+  renderIndicatorsTable(indicators);
+  updateHiddenCount();
+}
+function updateHiddenCount(){
+  document.getElementById('hiddenCount').textContent = getActiveHiddenSet().size;
+}
+
+document.getElementById('indicatorsBody').addEventListener('click', (e) => {
+  const eyeBtn = e.target.closest('.eye-btn');
+  if(eyeBtn){
+    const key = eyeBtn.getAttribute('data-key');
+    const hset = getActiveHiddenSet();
+    if(hset.has(key)) hset.delete(key); else hset.add(key);
+    renderCurrentView();
+    return;
+  }
+  const delBtn = e.target.closest('.del-indicator-btn');
+  if(delBtn){
+    const mgr = currentManager();
+    if(!mgr) return;
+    const idx = parseInt(delBtn.getAttribute('data-idx'), 10);
+    const ind = mgr.indicators[idx];
+    const ok = window.confirm(`Remover o indicador "${ind.name}" deste gerente?`);
+    if(!ok) return;
+    mgr.indicators.splice(idx, 1);
+    renderCurrentView();
+    saveManagerSnapshot(mgr.id, `Indicador removido — ${ind.name}`);
+    refreshIndicatorChecklist();
+    refreshIndicatorCompareIfOpen();
+  }
+});
+
+document.getElementById('atgFilter').addEventListener('change', (e) => {
+  currentFilter = e.target.value;
+  renderCurrentView();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && e.target.closest && e.target.closest('.editable-cell')){
+    e.preventDefault();
+    e.target.blur();
+  }
+});
+document.addEventListener('focusout', (e) => {
+  const cell = e.target.closest && e.target.closest('.editable-cell[data-field]');
+  if(!cell) return;
+  const mgr = currentManager();
+  if(!mgr) return;
+  const idx = parseInt(cell.getAttribute('data-idx'), 10);
+  const ind = mgr.indicators[idx];
+  if(!ind) return;
+  const field = cell.getAttribute('data-field');
+  let newVal = cell.textContent.trim();
+  if(field === 'meta' || field === 'realizado') newVal = formatNumberDisplay(newVal);
+  if(newVal === ind[field]) return;
+  ind[field] = newVal;
+  if(field === 'meta' || field === 'realizado') recomputeAtg(ind);
+  renderCurrentView();
+  saveManagerSnapshot(mgr.id, `Edição manual — ${ind.name} (${field})`);
+  refreshIndicatorChecklist();
+  refreshIndicatorCompareIfOpen();
+});
+document.getElementById('revealBtn').addEventListener('click', () => {
+  getActiveHiddenSet().clear();
+  renderCurrentView();
+});
+
+function populateGerenteSelect(){
+  const sel = document.getElementById('gerenteSelect');
+  const viewVal = document.getElementById('viewSelect').value;
+  const groupId = viewVal.split(':')[1];
+  const groupManagers = managers.filter(m => m.group === groupId);
+  sel.innerHTML = `<option value="__group__">Consolidado (todos deste grupo)</option>` +
+    groupManagers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+  if(activeSelection.type === 'manager'){
+    const mgr = currentManager();
+    sel.value = (mgr && mgr.group === groupId) ? mgr.id : '__group__';
+  } else {
+    sel.value = '__group__';
+  }
+}
+document.getElementById('viewSelect').addEventListener('change', (e) => {
+  const groupId = e.target.value.split(':')[1];
+  activeSelection = { type:'group', groupId };
+  populateGerenteSelect();
+  currentFilter = 'todos';
+  document.getElementById('atgFilter').value = 'todos';
+  renderCurrentView();
+});
+document.getElementById('gerenteSelect').addEventListener('change', (e) => {
+  const val = e.target.value;
+  if(val === '__group__'){
+    const groupId = document.getElementById('viewSelect').value.split(':')[1];
+    activeSelection = { type:'group', groupId };
+  } else {
+    activeSelection = { type:'manager', managerId: val };
+  }
+  renderCurrentView();
+  loadHistoryList();
+});
+document.getElementById('addManagerBtn').addEventListener('click', () => {
+  const name = window.prompt('Nome do novo gerente de relacionamento:');
+  if(!name || !name.trim()) return;
+  const groupId = document.getElementById('viewSelect').value.split(':')[1];
+  const id = 'gerente-' + Date.now();
+  const mgr = { id, name: name.trim(), group: groupId, indicators: [] };
+  managers.push(mgr);
+  managerHiddenKeys.set(id, new Set());
+  activeSelection = { type:'manager', managerId:id };
+  populateGerenteSelect();
+  renderCurrentView();
+  saveManagerSnapshot(id, 'Gerente criado');
+  saveManagersIndex();
+});
+document.getElementById('renameManagerBtn').addEventListener('click', () => {
+  const mgr = currentManager();
+  if(!mgr){ window.alert('Selecione um gerente específico para renomear.'); return; }
+  const name = window.prompt('Novo nome para este gerente:', mgr.name);
+  if(!name || !name.trim()) return;
+  mgr.name = name.trim();
+  populateGerenteSelect();
+  renderCurrentView();
+  saveManagerSnapshot(mgr.id, 'Nome atualizado');
+  saveManagersIndex();
+});
+document.getElementById('deleteManagerBtn').addEventListener('click', () => {
+  const mgr = currentManager();
+  if(!mgr){ window.alert('Selecione um gerente específico para excluir.'); return; }
+  const ok = window.confirm(`Excluir o gerente "${mgr.name}"? Esta ação não pode ser desfeita.`);
+  if(!ok) return;
+  managers = managers.filter(m => m.id !== mgr.id);
+  managerHiddenKeys.delete(mgr.id);
+  if(firebaseReady){
+    managersCollectionRef().doc(mgr.id).delete().catch(err => console.error('Erro ao excluir gerente:', err));
+  }
+  activeSelection = { type:'group', groupId: mgr.group };
+  document.getElementById('viewSelect').value = 'group:' + mgr.group;
+  populateGerenteSelect();
+  renderCurrentView();
+  saveManagersIndex();
+});
+
+document.getElementById('addIndicatorBtn').addEventListener('click', () => {
+  const mgr = currentManager();
+  if(!mgr){ window.alert('Selecione um gerente específico para adicionar indicadores.'); return; }
+  const name = window.prompt('Nome do indicador:');
+  if(!name || !name.trim()) return;
+  const pesoStr = window.prompt('Peso deste indicador (ex.: 5,0):', '0,0');
+  const ind = { name: name.trim(), peso: (pesoStr || '0,0').trim(), meta:'', realizado:'', atg:'0,00' };
+  mgr.indicators.push(ind);
+  renderCurrentView();
+  saveManagerSnapshot(mgr.id, `Indicador adicionado — ${ind.name}`);
+  refreshIndicatorChecklist();
+});
+
+async function extractLinesFromPdf(arrayBuffer){
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const lines = [];
+  for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    const rows = [];
+    content.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      const x = item.transform[4];
+      let row = rows.find(r => Math.abs(r.y - y) <= 3);
+      if(!row){ row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, text: item.str });
+    });
+    rows.sort((a,b) => b.y - a.y);
+    rows.forEach(row => {
+      row.items.sort((a,b) => a.x - b.x);
+      const lineText = row.items.map(i => i.text).join(' ').replace(/\s+/g, ' ').trim();
+      if(lineText) lines.push(lineText);
+    });
+  }
+  return lines;
+}
+function extractNumbersFromLine(line){
+  const allNumbers = line.match(/-?\d{1,3}(?:\.\d{3})*,\d{1,2}/g) || [];
+  const pesoMatch = allNumbers.find(n => /,\d$/.test(n)) || '';
+  const bigNumbers = allNumbers.filter(n => /,\d{2}$/.test(n));
+  let meta = '', realizado = '';
+  if(bigNumbers.length >= 2){ meta = bigNumbers[0]; realizado = bigNumbers[1]; }
+  else if(bigNumbers.length === 1){ realizado = bigNumbers[0]; }
+  return { peso: pesoMatch, meta, realizado };
+}
+function lineIndicatorName(line){
+  const numMatch = line.match(/-?\d{1,3}(?:\.\d{3})*,\d{1,2}/);
+  if(!numMatch) return null;
+  const idx = line.indexOf(numMatch[0]);
+  let name = line.slice(0, idx).replace(/^[+\-•●○▪✚]\s*/, '').trim();
+  name = name.replace(/\s+(QTD|PROD|PERC|PONT)\s*$/i, '').trim();
+  return name || null;
+}
+// Núcleo compartilhado: dado um array de "linhas de texto" (de onde vierem —
+// PDF ou HTML colado da tabela do portal), atualiza os indicadores já
+// rastreados deste gerente e sugere os que ainda não são rastreados.
+function applyLinesToManager(mgr, lines){
+  let updated = 0;
+  const notFoundNames = [];
+  mgr.indicators.forEach(ind => {
+    const targetNorm = normalizeName(ind.name);
+    let bestLine = null, bestScore = 0;
+    lines.forEach(line => {
+      const candidateName = lineIndicatorName(line);
+      if(!candidateName) return;
+      const score = nameSimilarity(targetNorm, normalizeName(candidateName));
+      if(score > bestScore){ bestScore = score; bestLine = line; }
+    });
+    if(bestLine && bestScore >= 0.55){
+      const nums = extractNumbersFromLine(bestLine);
+      if(nums.peso) ind.peso = nums.peso;
+      if(nums.meta) ind.meta = formatNumberDisplay(nums.meta);
+      if(nums.realizado) ind.realizado = formatNumberDisplay(nums.realizado);
+      if(nums.meta || nums.realizado) recomputeAtg(ind);
+      updated++;
+    } else {
+      notFoundNames.push(ind.name);
     }
   });
-
-  return result.sort((a,b) => a.localeCompare(b, 'pt-BR'));
+  const trackedNorms = mgr.indicators.map(i => normalizeName(i.name));
+  const seen = new Set();
+  const suggestions = [];
+  lines.forEach(line => {
+    const name = lineIndicatorName(line);
+    if(!name) return;
+    const norm = normalizeName(name);
+    if(seen.has(norm)) return;
+    const alreadyTracked = trackedNorms.some(t => nameSimilarity(t, norm) >= 0.55);
+    if(alreadyTracked) return;
+    const nums = extractNumbersFromLine(line);
+    if(!nums.meta && !nums.realizado) return;
+    seen.add(norm);
+    suggestions.push({ name, ...nums });
+  });
+  return { updated, notFoundNames, suggestions };
 }
 
+async function importPdfForManager(mgr, arrayBuffer){
+  const lines = await extractLinesFromPdf(arrayBuffer);
+  return applyLinesToManager(mgr, lines);
+}
+
+// Extrai "linhas de texto" a partir de um HTML colado (ex.: outerHTML de uma
+// tabela copiado via Console/DevTools do navegador no computador do banco).
+// Usa cada <tr> como uma linha — não depende de nomes de classe específicos.
+function extractLinesFromHtml(htmlStr){
+  const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+  const rows = Array.from(doc.querySelectorAll('tr'));
+  if(rows.length > 0){
+    return rows.map(row => {
+      const cells = Array.from(row.querySelectorAll('td, th'));
+      const text = cells.length > 0
+        ? cells.map(c => c.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' ')
+        : row.textContent.replace(/\s+/g,' ').trim();
+      return text;
+    }).filter(Boolean);
+  }
+  const bodyText = doc.body ? doc.body.textContent.replace(/\s+/g,' ').trim() : '';
+  return bodyText ? [bodyText] : [];
+}
+
+function renderSuggestionsBox(boxEl, mgr, suggestions, reasonLabel){
+  if(suggestions.length === 0){
+    boxEl.style.display = 'none';
+    boxEl.innerHTML = '';
+    return;
+  }
+  boxEl.style.display = 'block';
+  boxEl.innerHTML = `
+    <div style="font-weight:700;margin-bottom:6px;font-size:13px;color:#5a2153;">
+      Encontrei ${suggestions.length} indicador(es) que você ainda não está rastreando. Quer adicionar algum?
+    </div>
+    ${suggestions.map((s, i) => `
+      <label class="suggestion-item">
+        <input type="checkbox" data-sugg-idx="${i}">
+        ${s.name} ${s.realizado ? `(Realizado: ${formatNumberDisplay(s.realizado)})` : ''}
+      </label>
+    `).join('')}
+    <button class="pill purple add-suggestions-btn" style="cursor:pointer;margin-top:8px;">Adicionar selecionados</button>
+  `;
+  boxEl.querySelector('.add-suggestions-btn').addEventListener('click', () => {
+    const checked = boxEl.querySelectorAll('input[type="checkbox"]:checked');
+    let added = 0;
+    checked.forEach(cb => {
+      const idx = parseInt(cb.getAttribute('data-sugg-idx'), 10);
+      const s = suggestions[idx];
+      const ind = { name: s.name, peso: s.peso || '0,0', meta: formatNumberDisplay(s.meta), realizado: formatNumberDisplay(s.realizado), atg:'0,00' };
+      recomputeAtg(ind);
+      mgr.indicators.push(ind);
+      added++;
+    });
+    if(added > 0){
+      renderCurrentView();
+      saveManagerSnapshot(mgr.id, `${added} indicador(es) adicionado(s) via sugestão (${reasonLabel})`);
+      refreshIndicatorChecklist();
+      boxEl.style.display = 'none';
+      boxEl.innerHTML = '';
+    }
+  });
+}
+
+document.getElementById('applyHtmlPasteBtn').addEventListener('click', () => {
+  const textEl = document.getElementById('htmlPasteArea');
+  const statusEl = document.getElementById('htmlPasteStatus');
+  const suggestionsBox = document.getElementById('htmlPasteSuggestions');
+  const htmlStr = textEl.value;
+
+  const mgr = currentManager();
+  if(!mgr){
+    statusEl.textContent = 'Selecione um gerente específico antes de atualizar.';
+    statusEl.style.color = '#a3123a';
+    return;
+  }
+  if(!htmlStr.trim()){
+    statusEl.textContent = 'Cole o HTML copiado do portal antes de atualizar.';
+    statusEl.style.color = '#a3123a';
+    return;
+  }
+
+  try {
+    const lines = extractLinesFromHtml(htmlStr);
+    if(lines.length === 0){
+      statusEl.textContent = 'Não consegui identificar linhas de tabela nesse HTML.';
+      statusEl.style.color = '#a3123a';
+      return;
+    }
+    const { updated, notFoundNames, suggestions } = applyLinesToManager(mgr, lines);
+    renderCurrentView();
+    saveManagerSnapshot(mgr.id, `Atualização via HTML colado — ${updated} indicador(es)`);
+    refreshIndicatorCompareIfOpen();
+
+    let msg = `${updated} de ${mgr.indicators.length} indicador(es) rastreado(s) atualizado(s).`;
+    if(notFoundNames.length) msg += ` Não encontrado(s): ${notFoundNames.join(', ')}.`;
+    statusEl.textContent = msg;
+    statusEl.style.color = notFoundNames.length ? '#b5730a' : '#2e7d32';
+
+    renderSuggestionsBox(suggestionsBox, mgr, suggestions, 'HTML colado');
+  } catch(err){
+    console.error('Erro ao processar HTML colado:', err);
+    statusEl.textContent = 'Erro ao processar o HTML: ' + err.message;
+    statusEl.style.color = '#a3123a';
+  }
+});
+
+document.getElementById('pdfFileInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  const statusEl = document.getElementById('pdfStatus');
+  const suggestionsBox = document.getElementById('pdfSuggestions');
+  if(!file) return;
+  const mgr = currentManager();
+  if(!mgr){
+    statusEl.textContent = 'Selecione um gerente específico antes de importar o PDF.';
+    statusEl.style.color = '#a3123a';
+    e.target.value = '';
+    return;
+  }
+  statusEl.textContent = 'Lendo o PDF...';
+  statusEl.style.color = '#555';
+  suggestionsBox.style.display = 'none';
+  suggestionsBox.innerHTML = '';
+  try {
+    if(typeof pdfjsLib === 'undefined'){
+      throw new Error('Biblioteca de leitura de PDF não carregou (verifique sua conexão com a internet).');
+    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const arrayBuffer = await file.arrayBuffer();
+    const { updated, notFoundNames, suggestions } = await importPdfForManager(mgr, arrayBuffer);
+    renderCurrentView();
+    saveManagerSnapshot(mgr.id, `Importação de PDF — ${updated} indicador(es) atualizado(s)`);
+    refreshIndicatorCompareIfOpen();
+    let msg = `${updated} de ${mgr.indicators.length} indicador(es) rastreado(s) atualizado(s).`;
+    if(notFoundNames.length) msg += ` Não encontrado(s) no PDF: ${notFoundNames.join(', ')}.`;
+    statusEl.textContent = msg;
+    statusEl.style.color = notFoundNames.length ? '#b5730a' : '#2e7d32';
+    renderSuggestionsBox(suggestionsBox, mgr, suggestions, 'PDF');
+  } catch(err){
+    console.error('Erro ao ler PDF:', err);
+    statusEl.textContent = 'Erro ao ler o PDF: ' + err.message;
+    statusEl.style.color = '#a3123a';
+  }
+  e.target.value = '';
+});
+
+function getAllTrackedIndicatorNames(){
+  const names = new Set();
+  managers.forEach(m => m.indicators.forEach(ind => names.add(ind.name)));
+  return Array.from(names).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+}
+function findIndicatorInList(name, list){
+  const targetNorm = normalizeName(name);
+  let best = null, bestScore = 0;
+  list.forEach(ind => {
+    const score = nameSimilarity(targetNorm, normalizeName(ind.name));
+    if(score > bestScore){ bestScore = score; best = ind; }
+  });
+  return bestScore >= 0.55 ? best : null;
+}
 function refreshIndicatorChecklist(){
   const listEl = document.getElementById('indicatorCheckboxList');
   if(!listEl) return;
   const previouslyChecked = new Set(getSelectedIndicators());
-  const options = buildIndicatorOptions();
-
+  const options = getAllTrackedIndicatorNames();
   if(options.length === 0){
-    listEl.innerHTML = '<div class="hist-empty">Nenhum indicador em comum entre a Agência e os gerentes ainda.</div>';
+    listEl.innerHTML = '<div class="empty-msg">Nenhum indicador rastreado ainda.</div>';
     return;
   }
-
   listEl.innerHTML = options.map(name => {
     const safe = name.replace(/"/g,'&quot;');
     const checked = previouslyChecked.has(name) ? 'checked' : '';
     return `<label class="indicator-check-item"><input type="checkbox" value="${safe}" ${checked}> ${name}</label>`;
   }).join('');
 }
-
 function getSelectedIndicators(){
   return Array.from(document.querySelectorAll('#indicatorCheckboxList input[type="checkbox"]:checked')).map(cb => cb.value);
 }
-
-// Monta a tabela de um único indicador: Agência + gerentes que o possuem,
-// classificados por % atingido (do menor para o maior), no layout em linhas.
 function buildIndicatorTable(indicatorName){
-  const agencyRow = findBestRowMatch(indicatorName, getAllRowsFrom(sections));
-
+  const rows = [];
+  ['varejo','prime'].forEach(groupId => {
+    const groupList = computeGroupIndicators(groupId);
+    const found = findIndicatorInList(indicatorName, groupList);
+    if(found) rows.push({ label: groupId === 'varejo' ? 'Agência Varejo' : 'Agência Prime', ind: found, isGroup:true });
+  });
   const managerRows = [];
   managers.forEach(mgr => {
-    const mRow = findBestRowMatch(indicatorName, getAllRowsFrom(mgr.sections));
-    if(mRow){
-      managerRows.push({ label: mgr.name, row: mRow });
-    }
+    const found = findIndicatorInList(indicatorName, mgr.indicators);
+    if(found) managerRows.push({ label: mgr.name, ind: found, isGroup:false });
   });
-  // gerentes: do maior para o menor % atingido
-  managerRows.sort((a,b) => (parseBR(b.row.atg) || 0) - (parseBR(a.row.atg) || 0));
-
-  // Agência sempre no topo, independente do seu %
-  const rows = [];
-  if(agencyRow){
-    rows.push({ label: 'Agência', row: agencyRow });
-  }
+  managerRows.sort((a,b) => (parseBR(b.ind.atg)||0) - (parseBR(a.ind.atg)||0));
   rows.push(...managerRows);
-
   let totalPts = 0;
   const bodyRows = rows.map(item => {
-    const calc = calcPontos(item.row);
-    const defa = calcDefasagem(item.row);
+    const calc = calcPontos(item.ind);
+    const defa = calcDefasagem(item.ind);
     const ptsNum = parseBR(calc.pts);
     if(!isNaN(ptsNum)) totalPts += ptsNum;
     const defaClass = defa.text ? (defa.negative ? 'ic-bad' : 'ic-ok') : '';
-    const rowClass = item.label === 'Agência' ? 'agency-row' : '';
+    const rowClass = item.isGroup ? 'group-row' : '';
     return `<tr class="${rowClass}">
       <td>${item.label}</td>
       <td>${indicatorName}</td>
-      <td>${formatNumberDisplay(item.row.meta) || '—'}</td>
-      <td>${formatNumberDisplay(item.row.realizado) || '—'}</td>
-      <td>${item.row.atg || '—'}%</td>
+      <td>${formatNumberDisplay(item.ind.meta) || '—'}</td>
+      <td>${formatNumberDisplay(item.ind.realizado) || '—'}</td>
+      <td>${item.ind.atg || '—'}%</td>
       <td class="${defaClass}">${defa.text || '—'}</td>
-      <td>${item.row.peso || '—'}</td>
+      <td>${item.ind.peso || '—'}</td>
       <td>${calc.pts}</td>
     </tr>`;
   }).join('');
-
   return `
     <div class="indicator-report">
       <div class="indicator-report-head">
@@ -1343,40 +950,34 @@ function buildIndicatorTable(indicatorName){
       </div>
       <div class="table-scroll">
         <table>
-          <thead>
-            <tr>
-              <th>Gerente</th><th>Indicador</th><th>Objetivo</th><th>Realizado</th><th>%</th><th>Desvio</th><th>Peso</th><th>Pontuação</th>
-            </tr>
-          </thead>
-          <tbody>${bodyRows || `<tr><td colspan="8" style="text-align:center;color:#888;font-style:italic;padding:14px;">Nenhum dado encontrado para este indicador.</td></tr>`}</tbody>
+          <thead><tr><th>Gerente</th><th>Indicador</th><th>Objetivo</th><th>Realizado</th><th>%</th><th>Desvio</th><th>Peso</th><th>Pontuação</th></tr></thead>
+          <tbody>${bodyRows || `<tr><td colspan="8" class="empty-msg">Nenhum dado encontrado.</td></tr>`}</tbody>
         </table>
       </div>
     </div>
   `;
 }
-
-function renderIndicatorComparison(indicatorNames){
+function renderIndicatorComparison(names){
   const wrap = document.getElementById('indicatorCompareResult');
   if(!wrap) return;
-  if(!indicatorNames || indicatorNames.length === 0){ wrap.innerHTML = ''; return; }
-  wrap.innerHTML = indicatorNames.map(name => buildIndicatorTable(name)).join('');
+  if(!names || names.length === 0){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = names.map(name => buildIndicatorTable(name)).join('');
 }
-
-// abre/fecha a lista de checkboxes
 document.getElementById('indicatorMultiToggle').addEventListener('click', () => {
   const listEl = document.getElementById('indicatorCheckboxList');
   listEl.style.display = listEl.style.display === 'none' ? 'block' : 'none';
 });
-
-// limpa toda a seleção de indicadores e a tabela de resultado
 document.getElementById('indicatorClearBtn').addEventListener('click', () => {
-  document.querySelectorAll('#indicatorCheckboxList input[type="checkbox"]:checked').forEach(cb => {
-    cb.checked = false;
-  });
+  document.querySelectorAll('#indicatorCheckboxList input[type="checkbox"]:checked').forEach(cb => cb.checked = false);
   renderIndicatorComparison([]);
 });
-
-// imprime somente o relatório de comparação (a página inteira fica oculta na impressão)
+document.getElementById('indicatorCheckboxList').addEventListener('change', () => {
+  renderIndicatorComparison(getSelectedIndicators());
+});
+function refreshIndicatorCompareIfOpen(){
+  const selected = getSelectedIndicators();
+  if(selected.length > 0) renderIndicatorComparison(selected);
+}
 document.getElementById('printReportBtn').addEventListener('click', () => {
   const wrap = document.getElementById('indicatorCompareResult');
   if(!wrap || !wrap.innerHTML.trim()){
@@ -1386,368 +987,6 @@ document.getElementById('printReportBtn').addEventListener('click', () => {
   window.print();
 });
 
-// qualquer alteração na seleção já atualiza a tabela na hora
-document.getElementById('indicatorCheckboxList').addEventListener('change', () => {
-  renderIndicatorComparison(getSelectedIndicators());
-});
-
-function refreshIndicatorCompareIfOpen(){
-  const selected = getSelectedIndicators();
-  if(selected.length > 0){
-    renderIndicatorComparison(selected);
-  }
-}
-
-function cleanNum(s){
-  return (s || '').toString().replace(/R\$/gi,'').replace(/%/g,'').trim();
-}
-
-// Linhas que são só cabeçalho/rótulo da tabela de origem (sem indicador de verdade),
-// usadas como reforço de segurança além do filtro "linha sem número".
-const JUNK_LINE = /^(produto|peso|m[eé]trica|dt\s*\.?\s*base|meta|realizado|%|atg\.?|ref\.?|proj\.?|final|nec\s*dia|pts|a[çc][ãa]o|neg[oó]cios)$/i;
-
-// Extrai os indicadores de um texto colado, SEM depender da posição exata das
-// colunas (tabulação de portais/intranets costuma vir bagunçada, com células
-// vazias "sumindo" e cabeçalhos com quebra de linha interna). Em vez disso,
-// identifica os números pelo formato:
-//   - PESO sempre tem 1 casa decimal (ex.: "3,0", "12,0")
-//   - META, REALIZADO, %ATG, %REF, %PROJ.FINAL, NEC DIA e PTS sempre têm 2 casas
-//     decimais (ex.: "92.895,68")
-// O nome do indicador é tudo que vem antes do primeiro número da linha.
-function parsePastedRows(text){
-  const lines = text
-    .split(/\r?\n/)
-    .map(l => l.replace(/\u00a0/g, ' ').trim())
-    .filter(Boolean);
-
-  const parsed = [];
-
-  lines.forEach(line => {
-    if(JUNK_LINE.test(line)) return; // linha é só um rótulo de cabeçalho isolado
-
-    // todos os números em formato BR (com ou sem milhar), 1 ou 2 casas decimais
-    const allNumbers = line.match(/-?\d{1,3}(?:\.\d{3})*,\d{1,2}/g) || [];
-    if(allNumbers.length === 0) return; // linha sem nenhum número: título de seção etc.
-
-    // nome = tudo antes do primeiro número encontrado na linha
-    const firstNum = allNumbers[0];
-    const firstNumIdx = line.indexOf(firstNum);
-    let name = line.slice(0, firstNumIdx).trim();
-    name = name.replace(/^[+\-•●○▪✚]\s*/, '').trim();          // remove marcador de expansão
-    name = name.replace(/\s+(QTD|PROD|PERC|PONT)\s*$/i, '').trim(); // métrica grudada no nome
-    if(!name || JUNK_LINE.test(name)) return;
-
-    // PESO: único número com exatamente 1 casa decimal
-    const pesoMatch = allNumbers.find(n => /,\d$/.test(n)) || '';
-
-    // os demais (2 casas decimais) seguem a ordem da tela de origem:
-    // META, REALIZADO, %ATG, %REF, %PROJ.FINAL, NEC DIA, PTS
-    const bigNumbers = allNumbers.filter(n => /,\d{2}$/.test(n));
-
-    let meta = '', realizado = '';
-    if(bigNumbers.length >= 2){
-      meta = bigNumbers[0];
-      realizado = bigNumbers[1];
-    } else if(bigNumbers.length === 1){
-      // só um valor de 2 casas: tratamos como Realizado (Meta normalmente já
-      // está definida e o mais comum é atualizar só o realizado no dia a dia)
-      realizado = bigNumbers[0];
-    }
-
-    parsed.push({ name, peso: pesoMatch, meta, realizado, atg: '' });
-  });
-
-  return parsed;
-}
-
-// Nomes-padrão de famílias/seções do POBJ Bradesco (Agência e Gerentes),
-// usados para VALIDAR se uma linha em maiúsculo é mesmo um cabeçalho de
-// família — evita criar famílias falsas a partir de fragmentos de
-// cabeçalho de coluna ("% PROJ.", "NEC DIA PTS") ou legendas de rodapé.
-const STANDARD_SECTION_HINTS = [
-  'CLIENTES', 'NEGÓCIOS CAPTAÇÃO', 'CAPTAÇÃO', 'NEGÓCIOS CRÉDITO', 'CRÉDITO',
-  'GESTÃO DE RISCO', 'PRODUTIVIDADE DA EQUIPE', 'PRODUTIVIDADE', 'QUALIDADE',
-  'LIGADAS E ACELERADORES', 'NEGÓCIOS LIGADAS', 'ACELERADORES', 'LIGADAS',
-];
-
-// Palavras que só aparecem em fragmentos de cabeçalho de coluna/legenda —
-// se uma linha maiúscula for composta SÓ por essas palavras, não é família.
-const HEADER_FRAGMENT_WORDS = new Set([
-  'produto','peso','metrica','dt','base','meta','realizado','atg','ref',
-  'proj','final','nec','dia','pts','acao','indicadores','pontos','pontuacao',
-  'totais','total','legendas','igual','superior','entre','inferior','nao',
-  'calculado','portal','varejo','bradesco','sistema','informacoes','tecnologia',
-]);
-
-// Uma linha só é aceita como cabeçalho de família quando: (1) é inteiramente
-// maiúscula, (2) não é composta só por fragmentos de cabeçalho/legenda, e
-// (3) bate por semelhança com uma família já existente no mapa OU com um dos
-// nomes-padrão conhecidos. Isso evita que ruído do PDF (cabeçalhos quebrados,
-// legendas de rodapé) seja confundido com uma família de verdade.
-function looksLikeSectionHeader(line, knownSectionNames){
-  const stripped = line.replace(/[\d.,%]/g, ' ').replace(/\s+/g, ' ').trim();
-  if(stripped.length < 3 || stripped.length > 40) return false;
-
-  const lettersOnly = stripped.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, '').trim();
-  if(lettersOnly.length < 3) return false;
-  if(lettersOnly !== lettersOnly.toUpperCase()) return false;
-
-  const wordsNorm = normalizeName(lettersOnly).split(' ').filter(Boolean);
-  if(wordsNorm.length === 0) return false;
-  if(wordsNorm.every(w => HEADER_FRAGMENT_WORDS.has(w))) return false;
-
-  const candidateNorm = normalizeName(stripped);
-  const allKnown = [...knownSectionNames, ...STANDARD_SECTION_HINTS];
-  return allKnown.some(name => nameSimilarity(candidateNorm, normalizeName(name)) >= 0.5);
-}
-
-// Percorre as linhas do PDF em ordem e marca a qual família/seção cada linha
-// pertence, com base no último cabeçalho de seção RECONHECIDO visto acima dela.
-function tagLinesWithSection(lines, knownSectionNames){
-  let currentSection = null;
-  return lines.map(line => {
-    if(looksLikeSectionHeader(line, knownSectionNames)){
-      currentSection = line.trim();
-      return { text: line, section: currentSection, isHeader: true };
-    }
-    return { text: line, section: currentSection, isHeader: false };
-  });
-}
-
-// =====================================================================
-// Importar dados de um PDF exportado do portal de origem
-// =====================================================================
-// Reconstrói o texto do PDF linha a linha, agrupando os fragmentos de texto
-// pela posição vertical (mesma "linha" visual da tabela) e ordenando da
-// esquerda para a direita — depois reaproveita o MESMO parsePastedRows()
-// usado na colagem de texto, já que ele já é tolerante a formatação bagunçada.
-async function extractLinesFromPdf(arrayBuffer){
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  const lines = [];
-
-  for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
-    const page = await pdf.getPage(pageNum);
-    const content = await page.getTextContent();
-
-    const rows = [];
-    content.items.forEach(item => {
-      const y = Math.round(item.transform[5]);
-      const x = item.transform[4];
-      let row = rows.find(r => Math.abs(r.y - y) <= 3);
-      if(!row){
-        row = { y, items: [] };
-        rows.push(row);
-      }
-      row.items.push({ x, text: item.str });
-    });
-
-    // de cima para baixo (coordenada Y do PDF cresce de baixo pra cima)
-    rows.sort((a,b) => b.y - a.y);
-    rows.forEach(row => {
-      row.items.sort((a,b) => a.x - b.x);
-      const lineText = row.items.map(i => i.text).join(' ').replace(/\s+/g, ' ').trim();
-      if(lineText) lines.push(lineText);
-    });
-  }
-
-  return lines;
-}
-
-// Compara a estrutura extraída do PDF (famílias + indicadores + pesos) com o
-// mapa atual e corrige o que for necessário:
-//  - indicador já existe                    -> atualiza Meta/Realizado (e Peso, se mudou)
-//  - indicador novo no PDF                  -> adiciona na família correspondente
-//    (só cria família nova se o cabeçalho bater com um nome padrão conhecido)
-//  - indicador do mapa não está mais no PDF -> fica marcado como candidato a
-//    remoção (só é removido de fato depois de confirmação do usuário)
-// Importante: indicadores já existentes NUNCA são movidos de família
-// automaticamente — isso evita reestruturar o mapa inteiro por causa de um
-// falso positivo na detecção de cabeçalho (o que já causou um bug grave).
-function syncStructureFromPdf(lines, sectionsArr){
-  const knownSectionNames = sectionsArr.map(s => s.name);
-  const tagged = tagLinesWithSection(lines, knownSectionNames);
-
-  const parsedWithSection = [];
-  tagged.forEach(({ text, section, isHeader }) => {
-    if(isHeader) return;
-    const [parsedRow] = parsePastedRows(text);
-    if(parsedRow) parsedWithSection.push({ ...parsedRow, section: section || null });
-  });
-
-  const allRows = [];
-  sectionsArr.forEach((sec, sIdx) => sec.rows.forEach((r, i) => allRows.push({ r, sIdx, i, matched:false })));
-
-  let updated = 0, pesoChanged = 0, added = 0;
-  const newSectionsCreated = new Set();
-  const addPlan = [];
-
-  function findOrCreateSection(sectionName){
-    if(!sectionName) return null;
-    let target = sectionsArr.find(s => nameSimilarity(normalizeName(s.name), normalizeName(sectionName)) >= 0.6);
-    if(!target){
-      target = { name: sectionName, weight:'', btn:null, btnClass:'purple', total:'0,00', rows: [] };
-      sectionsArr.push(target);
-      newSectionsCreated.add(sectionName);
-    }
-    return target;
-  }
-
-  parsedWithSection.forEach(p => {
-    const nName = normalizeName(p.name);
-    let best = null, bestScore = 0;
-    allRows.forEach(item => {
-      if(item.matched) return;
-      const score = nameSimilarity(nName, normalizeName(item.r.name));
-      if(score > bestScore){ bestScore = score; best = item; }
-    });
-
-    if(best && bestScore >= 0.55){
-      // indicador já existe — só atualiza os valores, NUNCA muda de família
-      best.matched = true;
-      if(p.meta) best.r.meta = formatNumberDisplay(p.meta);
-      if(p.realizado) best.r.realizado = formatNumberDisplay(p.realizado);
-      if(p.peso && p.peso !== best.r.peso){
-        best.r.peso = p.peso;
-        pesoChanged++;
-      }
-      if(p.meta || p.realizado) recomputeAtg(best.r);
-      updated++;
-    } else {
-      addPlan.push(p);
-    }
-  });
-
-  // adiciona indicadores novos na família detectada (ou cria a família, se
-  // o cabeçalho já foi validado contra os nomes-padrão conhecidos)
-  addPlan.forEach(p => {
-    const target = findOrCreateSection(p.section) || sectionsArr[sectionsArr.length - 1];
-    if(!target) return;
-    const newRow = row(p.name, p.peso || '0,0', '', '', p.meta, p.realizado, '0,00', '', '', '', '0,00', '');
-    recomputeAtg(newRow);
-    target.rows.push(newRow);
-    added++;
-  });
-
-  // indicadores do mapa que não apareceram no PDF (candidatos a remoção)
-  const toRemove = allRows.filter(item => !item.matched);
-
-  return {
-    updated, pesoChanged, added,
-    newSectionsCreated: Array.from(newSectionsCreated),
-    toRemove,
-  };
-}
-
-document.getElementById('pdfFileInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  const statusEl = document.getElementById('pdfStatus');
-  if(!file) return;
-
-  statusEl.textContent = 'Lendo o PDF...';
-  statusEl.style.color = '#555';
-
-  try {
-    if(typeof pdfjsLib === 'undefined'){
-      throw new Error('Biblioteca de leitura de PDF não carregou (verifique sua conexão com a internet).');
-    }
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    const arrayBuffer = await file.arrayBuffer();
-    const lines = await extractLinesFromPdf(arrayBuffer);
-
-    if(lines.length === 0){
-      statusEl.textContent = 'Não consegui extrair texto deste PDF.';
-      statusEl.style.color = '#a3123a';
-      return;
-    }
-
-    const sectionsArr = getActiveSectionsArr();
-    const result = syncStructureFromPdf(lines, sectionsArr);
-
-    const parts = [];
-    parts.push(`${result.updated} indicador(es) atualizado(s)`);
-    if(result.pesoChanged) parts.push(`${result.pesoChanged} com peso alterado`);
-    if(result.added) parts.push(`${result.added} indicador(es) novo(s) adicionado(s)`);
-    if(result.newSectionsCreated.length) parts.push(`nova(s) família(s): ${result.newSectionsCreated.join(', ')}`);
-
-    if(result.toRemove.length > 0){
-      const names = result.toRemove.map(item => item.r.name).join('\n- ');
-      const ok = window.confirm(
-        `${result.toRemove.length} indicador(es) do mapa atual não aparecem mais neste PDF:\n\n- ${names}\n\n` +
-        `Deseja REMOVER esses indicadores do mapa? (Cancelar mantém como estão, sem atualizar os valores deles)`
-      );
-      if(ok){
-        result.toRemove.forEach(item => {
-          const sec = sectionsArr[item.sIdx];
-          if(!sec) return;
-          const idx = sec.rows.indexOf(item.r);
-          if(idx !== -1) sec.rows.splice(idx, 1);
-        });
-        parts.push(`${result.toRemove.length} indicador(es) removido(s) do mapa`);
-      } else {
-        parts.push(`${result.toRemove.length} indicador(es) não localizado(s) no PDF (mantidos sem alteração)`);
-      }
-    }
-
-    renderCurrentView();
-    saveActiveSnapshot(`Importação de PDF (estrutura) — ${parts.join('; ')}`);
-    refreshIndicatorChecklist();
-    refreshIndicatorCompareIfOpen();
-
-    statusEl.textContent = parts.join(' · ') + '.';
-    statusEl.style.color = '#2e7d32';
-  } catch(err){
-    console.error('Erro ao ler PDF:', err);
-    statusEl.textContent = 'Erro ao ler o PDF: ' + err.message;
-    statusEl.style.color = '#a3123a';
-  }
-
-  e.target.value = ''; // permite selecionar o mesmo arquivo de novo depois
-});
-
-function applyParsedDataToSections(parsedRows, sectionsArr){
-  const allRows = [];
-  sectionsArr.forEach((sec, sIdx) => sec.rows.forEach((r,i) => allRows.push({r, sIdx, i})));
-  let updated = 0;
-  const notFound = [];
-  parsedRows.forEach(p => {
-    const nName = normalizeName(p.name);
-    let best = null, bestScore = 0;
-    allRows.forEach(item => {
-      const rName = normalizeName(item.r.name);
-      const score = nameSimilarity(nName, rName);
-      if(score > bestScore){ bestScore = score; best = item; }
-    });
-    if(best && bestScore >= 0.55){
-      if(p.peso) best.r.peso = p.peso;
-      if(p.meta) best.r.meta = formatNumberDisplay(p.meta);
-      if(p.realizado) best.r.realizado = formatNumberDisplay(p.realizado);
-      if(p.meta || p.realizado){
-        recomputeAtg(best.r); // %Atg. sempre recalculado a partir de Meta/Realizado
-      }
-      updated++;
-    } else {
-      notFound.push(p.name);
-    }
-  });
-  return { updated, notFound };
-}
-
-// mantém o nome antigo funcionando (usado pela visão da Agência)
-function applyParsedData(parsedRows){
-  return applyParsedDataToSections(parsedRows, sections);
-}
-
-// =====================================================================
-// FIREBASE — sincronização do estado atual e histórico de atualizações
-// =====================================================================
-// Como configurar:
-// 1) Crie (ou reaproveite) um projeto em https://console.firebase.google.com
-// 2) Ative o "Firestore Database"
-// 3) Em "Configurações do projeto > Seus apps", copie o objeto de config
-//    e cole nos campos abaixo, no lugar de "COLE_AQUI"
-// 4) Ajuste as regras do Firestore para permitir leitura/escrita
-//    (veja instruções detalhadas enviadas junto com este arquivo)
 const firebaseConfig = {
   apiKey: "AIzaSyAopjgjHKsIGA7ds8YmL2CB1VV7u3zFYEs",
   authDomain: "mesada-kids-f3c6f.firebaseapp.com",
@@ -1756,217 +995,149 @@ const firebaseConfig = {
   messagingSenderId: "822402484433",
   appId: "1:822402484433:web:c554f2204e7fa33bb69df0"
 };
-
-// Identificador do "documento" no banco — troque se usar para outra agência
 const AGENCIA_ID = "1408";
-
 let db = null;
 let firebaseReady = false;
 let viewingHistory = false;
-let liveSectionsBackup = null;
-let liveHiddenBackup = null;
+let liveBackup = null;
 
 function setFirebaseStatus(msg, color){
   const el = document.getElementById('fbStatus');
   if(el){ el.textContent = msg; el.style.color = color; }
 }
-
-function currentDocRef(){
-  return db.collection('pobjDashboard').doc(AGENCIA_ID);
+function managersCollectionRef(){
+  return db.collection('pobjDashboardGerentes').doc(AGENCIA_ID).collection('gerentes');
 }
-
-function snapshotPayload(){
-  return {
-    sections: JSON.parse(JSON.stringify(sections)),
-    hiddenKeys: Array.from(hiddenKeys),
-    summary: agencySummary,
-  };
-}
-
-function saveSnapshot(reason){
+function saveManagersIndex(){
   if(!firebaseReady) return;
-  const payload = snapshotPayload();
-
-  currentDocRef().set({
-    ...payload,
-    reason: reason || 'Atualização',
+  db.collection('pobjDashboardGerentes').doc(AGENCIA_ID).set({
+    list: managers.map(m => ({ id:m.id, name:m.name, group:m.group })),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    clientTime: Date.now(),
-  }).catch(err => {
-    console.error('Erro ao salvar estado atual no Firebase:', err);
-    setFirebaseStatus('Erro ao salvar no Firebase — verifique a configuração/regras.', '#a3123a');
-  });
-
-  currentDocRef().collection('historico').add({
-    ...payload,
-    reason: reason || 'Atualização',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    clientTime: Date.now(),
-  }).then(() => { if(activeScope === 'agency') loadHistoryList(); })
-    .catch(err => console.error('Erro ao salvar histórico no Firebase:', err));
+  }, { merge:true }).catch(err => console.error('Erro ao salvar lista de gerentes:', err));
 }
-
-function loadCurrent(){
-  if(!firebaseReady){ renderCurrentView(); return; }
-  currentDocRef().get().then(doc => {
-    if(doc.exists){
-      const data = doc.data();
-      if(Array.isArray(data.sections) && data.sections.length){
-        sections.length = 0;
-        data.sections.forEach(s => sections.push(s));
-      }
-      if(Array.isArray(data.hiddenKeys)){
-        hiddenKeys.clear();
-        data.hiddenKeys.forEach(k => hiddenKeys.add(k));
-      }
-      if(data.summary){
-        agencySummary = data.summary;
-      }
-    }
+function saveManagerSnapshot(mgrId, reason){
+  if(!firebaseReady) return;
+  const mgr = managers.find(m => m.id === mgrId);
+  if(!mgr) return;
+  const hset = managerHiddenKeys.get(mgrId) || new Set();
+  const payload = {
+    name: mgr.name,
+    group: mgr.group,
+    indicators: JSON.parse(JSON.stringify(mgr.indicators)),
+    hiddenKeys: Array.from(hset),
+  };
+  managersCollectionRef().doc(mgrId).set({
+    ...payload, reason: reason || 'Atualização',
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp(), clientTime: Date.now(),
+  }).catch(err => console.error('Erro ao salvar gerente no Firebase:', err));
+  managersCollectionRef().doc(mgrId).collection('historico').add({
+    ...payload, reason: reason || 'Atualização',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(), clientTime: Date.now(),
+  }).then(() => { if(activeSelection.type==='manager' && activeSelection.managerId===mgrId) loadHistoryList(); })
+    .catch(err => console.error('Erro ao salvar histórico do gerente:', err));
+}
+function seedDefaultManager(){
+  const mgr = { id:'gerente-1', name:'Novo Gerente', group:'varejo', indicators:[] };
+  managers.push(mgr);
+  saveManagerSnapshot(mgr.id, 'Carga inicial');
+  saveManagersIndex();
+}
+function loadManagers(){
+  if(!firebaseReady){
+    if(managers.length === 0) seedDefaultManager();
+    populateGerenteSelect();
     renderCurrentView();
     refreshIndicatorChecklist();
-    if(activeScope === 'agency') loadHistoryList();
-  }).catch(err => {
-    console.error('Erro ao carregar do Firebase:', err);
-    setFirebaseStatus('Erro ao carregar do Firebase — mostrando dados locais.', '#a3123a');
+    return;
+  }
+  managersCollectionRef().get().then(snap => {
+    if(snap.empty){
+      seedDefaultManager();
+      populateGerenteSelect();
+      renderCurrentView();
+      refreshIndicatorChecklist();
+      return;
+    }
+    managers = [];
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      managers.push({
+        id: docSnap.id,
+        name: d.name || docSnap.id,
+        group: d.group === 'prime' ? 'prime' : 'varejo',
+        indicators: Array.isArray(d.indicators) ? d.indicators : [],
+      });
+      if(Array.isArray(d.hiddenKeys)) managerHiddenKeys.set(docSnap.id, new Set(d.hiddenKeys));
+    });
+    populateGerenteSelect();
     renderCurrentView();
+    refreshIndicatorChecklist();
+  }).catch(err => {
+    console.error('Erro ao carregar gerentes do Firebase:', err);
+    if(managers.length === 0) seedDefaultManager();
+    populateGerenteSelect();
+    renderCurrentView();
+    refreshIndicatorChecklist();
   });
 }
-
-// ---- histórico: aponta sempre para a coleção da visão ativa (Agência ou gerente) ----
-function activeHistoryCollectionRef(){
-  if(activeScope === 'manager'){
-    return managersCollectionRef().doc(activeManagerId).collection('historico');
-  }
-  return currentDocRef().collection('historico');
-}
-
 function loadHistoryList(){
   const listEl = document.getElementById('historyList');
   if(!listEl) return;
-  if(!firebaseReady){
-    listEl.innerHTML = '<div class="hist-empty">Firebase não configurado.</div>';
-    return;
-  }
-  if(activeScope === 'manager' && !activeManagerId) return;
-
-  activeHistoryCollectionRef().orderBy('clientTime','desc').limit(20).get()
+  if(!firebaseReady){ listEl.innerHTML = '<div class="empty-msg">Firebase não configurado.</div>'; return; }
+  if(activeSelection.type !== 'manager'){ listEl.innerHTML = '<div class="empty-msg">Selecione um gerente para ver o histórico dele.</div>'; return; }
+  managersCollectionRef().doc(activeSelection.managerId).collection('historico').orderBy('clientTime','desc').limit(20).get()
     .then(snap => {
-      if(snap.empty){
-        listEl.innerHTML = '<div class="hist-empty">Nenhum histórico salvo ainda.</div>';
-        return;
-      }
+      if(snap.empty){ listEl.innerHTML = '<div class="empty-msg">Nenhum histórico salvo ainda.</div>'; return; }
       let html = '';
       snap.forEach(docSnap => {
         const d = docSnap.data();
         const date = new Date(d.clientTime || Date.now());
-        const label = date.toLocaleString('pt-BR');
-        html += `<button class="hist-item" data-hist-id="${docSnap.id}">${label} — ${d.reason || ''}</button>`;
+        html += `<button class="icon-btn hist-item" style="text-align:left;" data-hist-id="${docSnap.id}">${date.toLocaleString('pt-BR')} — ${d.reason||''}</button>`;
       });
       listEl.innerHTML = html;
-    })
-    .catch(err => {
-      console.error('Erro ao listar histórico:', err);
-      listEl.innerHTML = '<div class="hist-empty">Não foi possível carregar o histórico.</div>';
-    });
+    }).catch(err => { console.error(err); listEl.innerHTML = '<div class="empty-msg">Não foi possível carregar o histórico.</div>'; });
 }
-
-let liveBackup = null; // guarda o estado "ao vivo" enquanto se visualiza um histórico
-
-// abrir um item do histórico (somente leitura)
 document.addEventListener('click', (e) => {
   const histBtn = e.target.closest('.hist-item');
   if(!histBtn) return;
+  const mgr = currentManager();
+  if(!mgr) return;
   const id = histBtn.getAttribute('data-hist-id');
-
-  activeHistoryCollectionRef().doc(id).get().then(doc => {
+  managersCollectionRef().doc(mgr.id).collection('historico').doc(id).get().then(doc => {
     if(!doc.exists) return;
     const data = doc.data();
-
     if(!viewingHistory){
-      if(activeScope === 'manager'){
-        const mgr = currentManager();
-        liveBackup = {
-          scope: 'manager',
-          mgrId: mgr.id,
-          sections: JSON.parse(JSON.stringify(mgr.sections)),
-          summary: { ...mgr.summary },
-          hidden: new Set(getActiveHiddenSet()),
-        };
-      } else {
-        liveBackup = {
-          scope: 'agency',
-          sections: JSON.parse(JSON.stringify(sections)),
-          summary: { ...agencySummary },
-          hidden: new Set(hiddenKeys),
-        };
-      }
+      liveBackup = { mgrId: mgr.id, indicators: JSON.parse(JSON.stringify(mgr.indicators)), hidden: new Set(managerHiddenKeys.get(mgr.id) || []) };
     }
-
-    if(activeScope === 'manager'){
-      const mgr = currentManager();
-      if(mgr){
-        if(Array.isArray(data.sections)) mgr.sections = data.sections;
-        if(data.summary) mgr.summary = data.summary;
-        if(Array.isArray(data.hiddenKeys)) managerHiddenKeys.set(mgr.id, new Set(data.hiddenKeys));
-      }
-    } else {
-      if(Array.isArray(data.sections)){
-        sections.length = 0;
-        data.sections.forEach(s => sections.push(s));
-      }
-      if(data.summary) agencySummary = data.summary;
-      if(Array.isArray(data.hiddenKeys)){
-        hiddenKeys.clear();
-        data.hiddenKeys.forEach(k => hiddenKeys.add(k));
-      }
-    }
-
+    if(Array.isArray(data.indicators)) mgr.indicators = data.indicators;
+    if(Array.isArray(data.hiddenKeys)) managerHiddenKeys.set(mgr.id, new Set(data.hiddenKeys));
     viewingHistory = true;
     document.getElementById('historyBanner').style.display = 'flex';
-    document.getElementById('historyBannerText').textContent =
-      `Visualizando histórico de ${new Date(data.clientTime).toLocaleString('pt-BR')} (somente leitura)`;
+    document.getElementById('historyBannerText').textContent = `Visualizando histórico de ${new Date(data.clientTime).toLocaleString('pt-BR')} (somente leitura)`;
     renderCurrentView();
   });
 });
-
 document.getElementById('backToCurrentBtn').addEventListener('click', () => {
   if(liveBackup){
-    if(liveBackup.scope === 'manager'){
-      const mgr = managers.find(m => m.id === liveBackup.mgrId);
-      if(mgr){
-        mgr.sections = liveBackup.sections;
-        mgr.summary = liveBackup.summary;
-        managerHiddenKeys.set(mgr.id, liveBackup.hidden);
-      }
-    } else {
-      sections.length = 0;
-      liveBackup.sections.forEach(s => sections.push(s));
-      agencySummary = liveBackup.summary;
-      hiddenKeys.clear();
-      liveBackup.hidden.forEach(k => hiddenKeys.add(k));
-    }
+    const mgr = managers.find(m => m.id === liveBackup.mgrId);
+    if(mgr){ mgr.indicators = liveBackup.indicators; managerHiddenKeys.set(mgr.id, liveBackup.hidden); }
   }
   viewingHistory = false;
   document.getElementById('historyBanner').style.display = 'none';
   renderCurrentView();
 });
-
 document.getElementById('saveNowBtn').addEventListener('click', () => {
-  if(!firebaseReady){
-    setFirebaseStatus('Configure o Firebase (veja o topo do script) para poder salvar.', '#a3123a');
-    return;
-  }
-  saveActiveSnapshot('Salvo manualmente');
+  const mgr = currentManager();
+  if(!mgr){ window.alert('Selecione um gerente específico para salvar.'); return; }
+  if(!firebaseReady){ setFirebaseStatus('Configure o Firebase para poder salvar.', '#a3123a'); return; }
+  saveManagerSnapshot(mgr.id, 'Salvo manualmente');
   setFirebaseStatus('Estado atual salvo no Firebase.', '#2e7d32');
 });
-
 document.getElementById('toggleHistoryBtn').addEventListener('click', () => {
   const panel = document.getElementById('historyPanelWrap');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
   if(panel.style.display === 'block') loadHistoryList();
 });
-
 function initFirebase(){
   try {
     if(typeof firebase === 'undefined' || firebaseConfig.apiKey === 'COLE_AQUI'){
@@ -1978,299 +1149,10 @@ function initFirebase(){
     setFirebaseStatus('Conectado ao Firebase — os dados são salvos automaticamente.', '#2e7d32');
   } catch(err){
     firebaseReady = false;
-    setFirebaseStatus('Firebase não configurado — os dados não serão salvos entre sessões (edite o firebaseConfig no código).', '#a3123a');
+    setFirebaseStatus('Firebase não configurado — os dados não serão salvos entre sessões.', '#a3123a');
   }
 }
-
-// =====================================================================
-// GERENTES DE RELACIONAMENTO — modelo de dados, CRUD e persistência
-// =====================================================================
-// Estrutura-modelo baseada nas telas do gerente VJ-Hugo José Curtis Carvalho.
-// Observação: os produtos "Captação Líquida PJ" e "Centralização de Caixa PJ (Cash)"
-// tinham um "+" de expansão na tela original cujos subitens não apareciam no print;
-// se você tiver essas linhas, é só colar os dados que a busca por semelhança encaixa.
-const MANAGER_TEMPLATE_SECTIONS = [
-  {
-    name:"CLIENTES", weight:"11,0", btn:"CLIENTES", btnClass:"purple", total:"0,00",
-    rows:[
-      row("Crescimento Líquido Clientes PJ","5,0","QTD","","4,00","","0,00","0,00","0,00","0,00","0,00","",false,true,"clientes-crescimento"),
-      row("Conquista","0,0","QTD","","6,00","","0,00","0,00","0,00","0,00","0,00","",true,false,"clientes-crescimento"),
-      row("Reativação","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"clientes-crescimento"),
-      row("Inativação","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"clientes-crescimento"),
-      row("Encerramento","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"clientes-crescimento"),
-      row("Conquista e Reativação Qualificada PJ","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conquista de Clientes - Folha de Pagamento","4,0","QTD","","7,00","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Bradesco Expresso","2,0","PERC","","100,00","","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"NEGÓCIOS CAPTAÇÃO", weight:"20,0", btn:"CAPTAÇÃO", btnClass:"purple", total:"0,00",
-    rows:[
-      row("Captação Líquida PJ (Todos os Produtos)","3,0","PROD","","92.895,68","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Centralização de Caixa PJ (Cash)","9,0","PROD","","11.648.349,82","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Faturamento Cielo Novo","4,0","PROD","","30.758,01","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Faturamento Boleto + PIX QR Code – Novo","4,0","PROD","","61.821,85","","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"NEGÓCIOS CRÉDITO", weight:"", btn:"CRÉDITO", btnClass:"purple", total:"0,00",
-    rows:[
-      row("Utilização média de limites","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Utilização média de limites","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Produção de Crédito PJ (Todos os Produtos)","0,0","PROD","06/07/2026","","31.990,91","0,00","0,00","0,00","0,00","0,00",""),
-      row("Rentabilidade de Crédito - Spread PJ","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Limite Rotativo PJ","5,0","PROD","","18.795,82","","0,00","0,00","0,00","0,00","0,00","",false,true,"credito-limite"),
-      row("Total Crédito","0,0","PROD","03/07/2026","","31.990,91","0,00","0,00","0,00","0,00","0,00","",true,false,"credito-limite"),
-      row("Cheque Especial - qtd","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"credito-limite"),
-      row("Cheque Especial - vol","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"credito-limite"),
-      row("Capital de Giro Total PJ - Mês","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"GESTÃO DE RISCO", weight:"0,0", btn:"GESTÃO DE RISCO", btnClass:"purple", total:"0,00",
-    rows:[
-      row("Vencidos Até 59 dias","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Vencidos Acima de 59 dias","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Recuperação de LP - Total","0,0","PROD","03/07/2026","","90,20","0,00","0,00","0,00","0,00","0,00",""),
-      row("Recuperação de LP - À Vista + Entrada","0,0","PROD","03/07/2026","","90,20","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-  {
-    name:"NEGÓCIOS LIGADAS", weight:"15,0", btn:"LIGADAS", btnClass:"purple", total:"0,29",
-    rows:[
-      row("Cartões (Academia de Astros)","5,0","PERC","","100,00","","0,00","0,00","0,00","0,00","0,00","",false,true,"nl-cartoes"),
-      row("Cartão de Crédito Emissão PJ Negócios","0,0","QTD","","5,00","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-cartoes"),
-      row("Faturamento Cartão de Crédito PJ Negócios","0,0","PROD","","10.850,30","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-cartoes"),
-      row("Faturamento Novo Alelo","0,0","PROD","","752,04","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-cartoes"),
-      row("Faturamento Cielo Novo","0,0","PROD","","30.758,01","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-cartoes"),
-
-      row("Consórcio (Expert)","5,0","PERC","","100,00","","0,00","0,00","0,00","0,00","0,00","",false,true,"nl-consorcio"),
-      row("Consórcios - Total","0,0","PROD","","242.967,28","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-consorcio"),
-      row("Consórcios Pesados e Imóveis","0,0","PROD","","109.335,28","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-consorcio"),
-      row("Consórcios Auto","0,0","PROD","","133.632,00","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-consorcio"),
-
-      row("Seguros (Olimpíada de Produção)","5,0","PERC","03/07/2026","100,00","5,87","5,87","0,00","5,87","5,87","0,29","",false,true,"nl-seguros"),
-      row("Seguro de Vida (PU + PM)","15,0","PROD","","1.874,76","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Seguro de Vida PM","5,0","PROD","","26,25","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Vida Carteiro","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Capitalização (PU + PM)","15,0","PROD","06/07/2026","42.685,91","424,76","1,00","17,00","5,72","2.224,27","0,00","",true,false,"nl-seguros"),
-      row("Capitalização PM","5,0","PROD","03/07/2026","768,35","100,00","13,01","13,00","99,78","33,42","4,99","",true,false,"nl-seguros"),
-      row("Previdência Privada - Venda Bruta (PU + PM)","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Previdência Privada - Venda Bruta PM","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Dental PF","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Saúde / Dental PJ","15,0","PROD","","277,13","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Seguro Prestamista Volume (Prêmio)","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Seguro Auto","15,0","PROD","","905,48","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Seguro RE (sem residencial)","15,0","PROD","","1.319,44","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-      row("Seguro Residencial","0,0","PROD","","","","0,00","0,00","0,00","0,00","0,00","",true,false,"nl-seguros"),
-    ]
-  },
-  {
-    name:"QUALIDADE", weight:"10,0", btn:"QUALIDADE", btnClass:"purple", total:"15,00",
-    rows:[
-      row("Encanta BRA","10,0","PONT","07/07/2026","144,00","150,00","104,17","150,00","150,00","0,00","15,00",""),
-    ]
-  },
-  {
-    name:"LIGADAS E ACELERADORES", weight:"7,0", btn:"ACELERADORES", btnClass:"purple", total:"7,00",
-    rows:[
-      row("Capitalização (PU + PM)","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Open Finance PJ","7,0","QTD","06/07/2026","5,00","1,00","20,00","17,00","115,00","0,21","7,00",""),
-      row("CDC Veículos PJ - Mês","0,0","PERC","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conquista de Clientes PJ - Mês","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-      row("Conecta PJ","0,0","QTD","","","","0,00","0,00","0,00","0,00","0,00",""),
-    ]
-  },
-];
-
-function populateGerenteSelect(){
-  const sel = document.getElementById('gerenteSelect');
-  const managerOptions = managers.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
-  sel.innerHTML = `<option value="__agencia__">Consolidado da Unidade</option>` + managerOptions;
-  sel.value = activeScope === 'manager' ? activeManagerId : '__agencia__';
-}
-
-function managersCollectionRef(){
-  return db.collection('pobjDashboardGerentes').doc(AGENCIA_ID).collection('gerentes');
-}
-
-function saveManagersIndex(){
-  if(!firebaseReady) return;
-  db.collection('pobjDashboardGerentes').doc(AGENCIA_ID).set({
-    list: managers.map(m => ({ id:m.id, name:m.name })),
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-  }, { merge:true }).catch(err => console.error('Erro ao salvar lista de gerentes:', err));
-}
-
-function saveManagerSnapshot(mgrId, reason){
-  if(!firebaseReady) return;
-  const mgr = managers.find(m => m.id === mgrId);
-  if(!mgr) return;
-  const hset = managerHiddenKeys.get(mgrId) || new Set();
-  const payload = {
-    name: mgr.name,
-    summary: mgr.summary,
-    sections: JSON.parse(JSON.stringify(mgr.sections)),
-    hiddenKeys: Array.from(hset),
-  };
-
-  managersCollectionRef().doc(mgrId).set({
-    ...payload,
-    reason: reason || 'Atualização',
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-    clientTime: Date.now(),
-  }).catch(err => console.error('Erro ao salvar gerente no Firebase:', err));
-
-  managersCollectionRef().doc(mgrId).collection('historico').add({
-    ...payload,
-    reason: reason || 'Atualização',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    clientTime: Date.now(),
-  }).then(() => { if(activeScope === 'manager' && activeManagerId === mgrId) loadHistoryList(); })
-    .catch(err => console.error('Erro ao salvar histórico do gerente:', err));
-}
-
-function seedDefaultManager(){
-  const mgr = {
-    id: 'gerente-1',
-    name: 'VJ-HUGO JOSE CURTIS CARVALHO',
-    summary: {
-      indicTotal:'13', indicAtingidos:'2', idb:'15,38',
-      pontosPossiveis:'56,00', pontosAtingidos:'15,29', pctAting:'27,30', acelera:'7,00', pctFinal:'34,30'
-    },
-    sections: JSON.parse(JSON.stringify(MANAGER_TEMPLATE_SECTIONS)),
-  };
-  managers.push(mgr);
-  saveManagerSnapshot(mgr.id, 'Carga inicial');
-  saveManagersIndex();
-}
-
-// carrega a lista de gerentes em segundo plano — não muda a visão ativa
-// (a página continua abrindo no Consolidado da Agência por padrão)
-function loadManagers(){
-  if(!firebaseReady){
-    if(managers.length === 0) seedDefaultManager();
-    populateGerenteSelect();
-    refreshIndicatorChecklist();
-    return;
-  }
-  managersCollectionRef().get().then(snap => {
-    if(snap.empty){
-      seedDefaultManager();
-      populateGerenteSelect();
-      refreshIndicatorChecklist();
-      return;
-    }
-    managers = [];
-    snap.forEach(docSnap => {
-      const d = docSnap.data();
-      managers.push({
-        id: docSnap.id,
-        name: d.name || docSnap.id,
-        summary: d.summary || {},
-        sections: Array.isArray(d.sections) ? d.sections : [],
-      });
-      if(Array.isArray(d.hiddenKeys)){
-        managerHiddenKeys.set(docSnap.id, new Set(d.hiddenKeys));
-      }
-    });
-    populateGerenteSelect();
-    refreshIndicatorChecklist();
-  }).catch(err => {
-    console.error('Erro ao carregar gerentes do Firebase:', err);
-    if(managers.length === 0) seedDefaultManager();
-    populateGerenteSelect();
-    refreshIndicatorChecklist();
-  });
-}
-
-// ---- seletor "Gerente": alterna entre Consolidado da Agência e cada gerente ----
-document.getElementById('gerenteSelect').addEventListener('change', (e) => {
-  const val = e.target.value;
-  if(val === '__agencia__'){
-    activeScope = 'agency';
-    activeManagerId = null;
-  } else {
-    activeScope = 'manager';
-    activeManagerId = val;
-  }
-  // sai do modo de visualização de histórico ao trocar de visão
-  viewingHistory = false;
-  document.getElementById('historyBanner').style.display = 'none';
-  renderCurrentView();
-  loadHistoryList();
-});
-
-document.getElementById('addManagerBtn').addEventListener('click', () => {
-  const name = window.prompt('Nome do novo gerente de relacionamento:');
-  if(!name || !name.trim()) return;
-
-  const id = 'gerente-' + Date.now();
-  const blankSections = JSON.parse(JSON.stringify(MANAGER_TEMPLATE_SECTIONS)).map(sec => {
-    sec.rows = sec.rows.map(r => ({ ...r, meta:'', realizado:'', atg:'0,00' }));
-    sec.total = '0,00';
-    return sec;
-  });
-  const mgr = {
-    id,
-    name: name.trim(),
-    summary: { indicTotal:'', indicAtingidos:'', idb:'', pontosPossiveis:'', pontosAtingidos:'', pctAting:'', acelera:'', pctFinal:'' },
-    sections: blankSections,
-  };
-  managers.push(mgr);
-  managerHiddenKeys.set(id, new Set());
-
-  activeScope = 'manager';
-  activeManagerId = id;
-  populateGerenteSelect();
-  refreshIndicatorChecklist();
-  renderCurrentView();
-  saveManagerSnapshot(id, 'Gerente criado');
-  saveManagersIndex();
-});
-
-document.getElementById('renameManagerBtn').addEventListener('click', () => {
-  if(activeScope !== 'manager'){
-    window.alert('Selecione um gerente na lista para renomear.');
-    return;
-  }
-  const mgr = currentManager();
-  if(!mgr) return;
-  const name = window.prompt('Novo nome para este gerente:', mgr.name);
-  if(!name || !name.trim()) return;
-  mgr.name = name.trim();
-  populateGerenteSelect();
-  renderCurrentView();
-  saveManagerSnapshot(mgr.id, 'Nome atualizado');
-  saveManagersIndex();
-});
-
-document.getElementById('deleteManagerBtn').addEventListener('click', () => {
-  if(activeScope !== 'manager'){
-    window.alert('Selecione um gerente na lista para excluir.');
-    return;
-  }
-  const mgr = currentManager();
-  if(!mgr) return;
-  const ok = window.confirm(`Excluir o gerente "${mgr.name}"? Esta ação não pode ser desfeita.`);
-  if(!ok) return;
-
-  managers = managers.filter(m => m.id !== mgr.id);
-  managerHiddenKeys.delete(mgr.id);
-  if(firebaseReady){
-    managersCollectionRef().doc(mgr.id).delete().catch(err => console.error('Erro ao excluir gerente:', err));
-  }
-
-  activeScope = 'agency';
-  activeManagerId = null;
-  populateGerenteSelect();
-  refreshIndicatorChecklist();
-  renderCurrentView();
-  saveManagersIndex();
-});
-
 initFirebase();
-loadCurrent();
 loadManagers();
 </script>
 </body>
